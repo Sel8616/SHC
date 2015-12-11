@@ -1,6 +1,5 @@
 package cn.sel.hsharp.core;
 
-import cn.sel.hsharp.constant.Protocol;
 import cn.sel.hsharp.constant.RequestError;
 import cn.sel.hsharp.constant.RequestMethod;
 import cn.sel.hsharp.constant.StandardEncoding;
@@ -22,9 +21,7 @@ import java.util.concurrent.Executors;
  */
 public final class HttpClient
 {
-    //------------------------------------------------------------------------------------------------------------------
-    //Constants
-    //------------------------------------------------------------------------------------------------------------------
+    //region Constants------------------------------------------------------------------------------------------------------------------
     /**
      * The ONLY Instance
      */
@@ -42,12 +39,19 @@ public final class HttpClient
      */
     private static final int DEFAULT_TIMEOUT_READ = 10000;
     /**
+     * HTTP protocol name
+     */
+    public static final String PROTOCOL_HTTP = "HTTP";
+    /**
+     * HTTPS protocol name
+     */
+    public static final String PROTOCOL_HTTPS = "HTTPS";
+    /**
      * Lock
      */
     private final Object LOCK = new Object();
-    //------------------------------------------------------------------------------------------------------------------
-    //Properties
-    //------------------------------------------------------------------------------------------------------------------
+    //endregion Constants------------------------------------------------------------------------------------------------------------------
+    //region Properties-------------------------------------------------------------------------------------------------
     /**
      * Thread pool
      */
@@ -65,9 +69,8 @@ public final class HttpClient
      * It will be initialized as {@link StandardEncoding#UTF_8}
      */
     private static String DEFAULT_REQUEST_ENCODING = null;
-    //------------------------------------------------------------------------------------------------------------------
-    //Constructors & Initialization
-    //------------------------------------------------------------------------------------------------------------------
+    //endregion Properties----------------------------------------------------------------------------------------------
+    //region Constructors & Initialization-------------------------------------------------------------------------------------------------
 
     /**
      * Prevent instantiation by other class
@@ -77,7 +80,7 @@ public final class HttpClient
     }
 
     /**
-     * Get the ONLY instance.
+     * Get the ONLY instance, and init properties with default values.
      *
      * @return {@link #THE_CLIENT}
      */
@@ -91,6 +94,8 @@ public final class HttpClient
     }
 
     /**
+     * Get the ONLY instance, and init properties with specific values.
+     *
      * @param connectionTimeout      {@link #TIMEOUT_CONN}
      * @param readTimeout            {@link #TIMEOUT_READ}
      * @param threadPoolSize         {@link #THREAD_POOL} size
@@ -106,9 +111,8 @@ public final class HttpClient
         THREAD_POOL = Executors.newFixedThreadPool(threadPoolSize > 0 ? threadPoolSize : DEFAULT_POOL_SIZE);
         return THE_CLIENT;
     }
-    //------------------------------------------------------------------------------------------------------------------
-    //Methods
-    //------------------------------------------------------------------------------------------------------------------
+    //endregion Constructors & Initialization-------------------------------------------------------------------------------------------------
+    //region Methods------------------------------------------------------------------------------------------------------------------
 
     /**
      * Create a holder to cache custom headers and connection attributes.
@@ -120,21 +124,45 @@ public final class HttpClient
         return new RequestHolder(this);
     }
 
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param url             String form of host url. A full expression is expected!
+     * @param parameters      A {@link Map} that contains some parameters/Empty/Null.
+     * @param responseHandler Implementation of {@link ResponseHandler}
+     */
     public final void get(int requestId, @NotNull String url, @Nullable Map<String, Object> parameters, @NotNull ResponseHandler responseHandler)
     {
         sendHttpRequest(requestId, url, parameters, RequestMethod.GET, responseHandler, null, null, null);
     }
 
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param url             String form of host url. A full expression is expected!
+     * @param parameters      A {@link Map} that contains some parameters/Empty/Null.
+     * @param responseHandler Implementation of {@link ResponseHandler}
+     */
     public final void post(int requestId, @NotNull String url, @Nullable Map<String, Object> parameters, @NotNull ResponseHandler responseHandler)
     {
         sendHttpRequest(requestId, url, parameters, RequestMethod.POST, responseHandler, null, null, null);
     }
 
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param url             String form of host url. A full expression is expected!
+     * @param parameters      A {@link Map} that contains some parameters/Empty/Null.
+     * @param responseHandler Implementation of {@link ResponseHandler}
+     */
     public final void put(int requestId, @NotNull String url, @Nullable Map<String, Object> parameters, @NotNull ResponseHandler responseHandler)
     {
         sendHttpRequest(requestId, url, parameters, RequestMethod.PUT, responseHandler, null, null, null);
     }
 
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param url             String form of host url. A full expression is expected!
+     * @param parameters      A {@link Map} that contains some parameters/Empty/Null.
+     * @param responseHandler Implementation of {@link ResponseHandler}
+     */
     public final void delete(int requestId, @NotNull String url, @Nullable Map<String, Object> parameters, @NotNull ResponseHandler responseHandler)
     {
         sendHttpRequest(requestId, url, parameters, RequestMethod.DELETE, responseHandler, null, null, null);
@@ -157,7 +185,6 @@ public final class HttpClient
             @Override
             public void run()
             {
-                long start = System.currentTimeMillis(), connect = 0, read = 0, last;
                 responseHandler.registerRequest(requestId);
                 Response response = new Response();
                 try
@@ -165,7 +192,6 @@ public final class HttpClient
                     HttpURLConnection connection = initConnection(urlString, requestMethod, parameters, requestEncoding, setHeaders, addHeaders);
                     if (connection != null)
                     {
-                        connect = System.currentTimeMillis();
                         connection.connect();
                         response.URL = connection.getURL();
                         response.StatusCode = connection.getResponseCode();
@@ -187,7 +213,6 @@ public final class HttpClient
                             response.ContentBytes = outputStream.toByteArray();
                             inputStream.close();
                             outputStream.close();
-                            read = System.currentTimeMillis();
                         }
                     } else
                     {
@@ -222,11 +247,6 @@ public final class HttpClient
                 } finally
                 {
                     responseHandler.handleResponse(requestId, response);
-                    last = System.currentTimeMillis();
-                    System.out.println("Start:" + start);
-                    System.out.println("connect:" + (connect - start));
-                    System.out.println("read:" + (read - start));
-                    System.out.println("last:" + (last - start));
                 }
             }
         });
@@ -263,10 +283,10 @@ public final class HttpClient
                 break;
         }
         HttpURLConnection connection = null;
-        if (Protocol.HTTP.equalsIgnoreCase(url.getProtocol()))
+        if (PROTOCOL_HTTP.equalsIgnoreCase(url.getProtocol()))
         {
             connection = (HttpURLConnection)url.openConnection();
-        } else if (Protocol.HTTPS.equalsIgnoreCase(url.getProtocol()))
+        } else if (PROTOCOL_HTTPS.equalsIgnoreCase(url.getProtocol()))
         {
             connection = (HttpsURLConnection)url.openConnection();
         }
@@ -312,7 +332,7 @@ public final class HttpClient
     }
 
     /**
-     * Make a QueryString from parameters in {@link Map}
+     * Make a QueryString from the parameters, excluding '?'
      *
      * @param params          {@link Map}
      * @param requestEncoding Parameters encoding
@@ -372,4 +392,5 @@ public final class HttpClient
     {
         return object == null ? "" : object.toString();
     }
+    //endregion Methods-------------------------------------------------------------------------------------------------
 }

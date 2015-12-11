@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Handle the responses received by {@link HttpClient}<br/>
  * <li>1.One ResponseHandler can recognize different {@link Response}s by their 'requestId's.</li>
- * <li>2.A request can be false canceled by calling 'cancelTask(int requestId)' before the response arrive,then the response will be ignored.</li>
+ * <li>2.A request can be false canceled by calling 'cancelTask(int requestId)'. If the response hasn't arrived, it will be ignored.</li>
  *
  * @see HttpClient
  */
@@ -55,7 +55,7 @@ public abstract class ResponseHandler
      * @param requestId See {@link HttpClient}
      * @param response  {@link Response}
      */
-    public void handleResponse(int requestId, Response response)
+    void handleResponse(int requestId, Response response)
     {
         if (response != null)
         {
@@ -63,6 +63,7 @@ public abstract class ResponseHandler
             RequestError errorCode = response.ErrorCode;
             if (REQUEST_SET.contains(requestId))
             {//This request is still in the sequence. In other case, it should be ignored.
+                REQUEST_SET.remove(requestId);
                 onFinished(requestId);
                 switch (statusCode)
                 {
@@ -81,16 +82,6 @@ public abstract class ResponseHandler
     }
 
     /**
-     * Cancel a pending request
-     *
-     * @param requestId requestId
-     */
-    public void cancelTask(int requestId)
-    {
-        REQUEST_SET.remove(requestId);
-    }
-
-    /**
      * Tell the ResponseHandler that a new request tagged with 'requestId' is about to be send out.
      *
      * @param requestId Only {@link HttpClient} can invoke this method.
@@ -98,5 +89,24 @@ public abstract class ResponseHandler
     void registerRequest(int requestId)
     {
         REQUEST_SET.add(requestId);
+    }
+
+    /**
+     * Try to cancel a pending request.
+     *
+     * @param requestId requestId
+     *
+     * @return True: Succeeded to cancel; False: Already returned.
+     */
+    public boolean cancelTask(int requestId)
+    {
+        if (REQUEST_SET.contains(requestId))
+        {
+            REQUEST_SET.remove(requestId);
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 }

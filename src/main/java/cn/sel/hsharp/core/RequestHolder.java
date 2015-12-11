@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Used to hold some attributes for a new request which is going to be send out but still has other attributes to add.
+ * Hold attributes for a new request which is going to be send out but still has other attributes to add.
  */
 public final class RequestHolder
 {
@@ -19,7 +19,7 @@ public final class RequestHolder
      */
     private final HttpClient client;
     /**
-     * The encoding with which request parameters will be encoded.
+     * To encode the request parameters.
      */
     private String REQUEST_ENCODING;
     /**
