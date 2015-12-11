@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="hsharp:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/hsharp_jar</output-path>
+    <root id="archive" name="hsharp.jar">
+      <element id="module-output" name="HSharp" />
+    </root>
+  </artifact>
+</component>
