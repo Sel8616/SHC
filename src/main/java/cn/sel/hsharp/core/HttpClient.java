@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
  */
 public final class HttpClient
 {
-    //region Constants------------------------------------------------------------------------------------------------------------------
+    //region Constants--------------------------------------------------------------------------------------------------
     /**
      * The ONLY Instance
      */
@@ -50,7 +50,7 @@ public final class HttpClient
      * Lock
      */
     private final Object LOCK = new Object();
-    //endregion Constants------------------------------------------------------------------------------------------------------------------
+    //endregion Constants-----------------------------------------------------------------------------------------------
     //region Properties-------------------------------------------------------------------------------------------------
     /**
      * Thread pool
@@ -70,7 +70,7 @@ public final class HttpClient
      */
     private static String DEFAULT_REQUEST_ENCODING = null;
     //endregion Properties----------------------------------------------------------------------------------------------
-    //region Constructors & Initialization-------------------------------------------------------------------------------------------------
+    //region Constructors & Initialization------------------------------------------------------------------------------
 
     /**
      * Prevent instantiation by other class
@@ -111,8 +111,8 @@ public final class HttpClient
         THREAD_POOL = Executors.newFixedThreadPool(threadPoolSize > 0 ? threadPoolSize : DEFAULT_POOL_SIZE);
         return THE_CLIENT;
     }
-    //endregion Constructors & Initialization-------------------------------------------------------------------------------------------------
-    //region Methods------------------------------------------------------------------------------------------------------------------
+    //endregion Constructors & Initialization---------------------------------------------------------------------------
+    //region Methods----------------------------------------------------------------------------------------------------
 
     /**
      * Create a holder to cache custom headers and connection attributes.
