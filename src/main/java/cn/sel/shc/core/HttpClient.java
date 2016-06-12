@@ -20,15 +20,6 @@ import java.util.concurrent.Executors;
 public final class HttpClient
 {
     //region Constants--------------------------------------------------------------------------------------------------
-
-    /**
-     * Singleton instance holder
-     */
-    private static class SingletonHolder
-    {
-        private static final HttpClient INSTANCE = new HttpClient();
-    }
-
     /**
      * HTTP protocol name
      */
@@ -275,13 +266,13 @@ public final class HttpClient
     {
         Objects.requireNonNull(urlString);
         Objects.requireNonNull(requestMethod);
-        String queryString = createQueryString(parameters, requestEncoding);
+        String requestData = createRequestData(parameters, requestEncoding);
         URL url = null;
         switch(requestMethod)
         {
             case GET:
             case DELETE:
-                url = new URL(queryString != null && queryString.length() > 0 ? urlString + '?' + queryString : urlString);
+                url = new URL(requestData != null && requestData.length() > 0 ? urlString + '?' + requestData : urlString);
                 break;
             case POST:
             case PUT:
@@ -298,13 +289,6 @@ public final class HttpClient
         }
         if(connection != null)
         {
-            if(setHeaders != null)
-            {
-                for(Map.Entry<String, String> entry : setHeaders.entrySet())
-                {
-                    connection.setRequestProperty(entry.getKey(), entry.getValue());
-                }
-            }
             if(addHeaders != null)
             {
                 for(Map.Entry<String, List<String>> entry : addHeaders.entrySet())
@@ -317,6 +301,13 @@ public final class HttpClient
                     }
                 }
             }
+            if(setHeaders != null)
+            {
+                for(Map.Entry<String, String> entry : setHeaders.entrySet())
+                {
+                    connection.setRequestProperty(entry.getKey(), entry.getValue());
+                }
+            }
             connection.setRequestMethod(requestMethod.name());
             connection.setConnectTimeout(TIMEOUT_CONN);
             connection.setReadTimeout(TIMEOUT_READ);
@@ -325,10 +316,10 @@ public final class HttpClient
             {
                 connection.setDoOutput(true);
                 connection.setUseCaches(false);
-                if(queryString != null && queryString.length() > 0)
+                if(requestData != null && requestData.length() > 0)
                 {//Fill request body
                     OutputStream out = connection.getOutputStream();
-                    out.write(queryString.getBytes());
+                    out.write(requestData.getBytes());
                     out.flush();
                     out.close();
                 }
@@ -338,16 +329,16 @@ public final class HttpClient
     }
 
     /**
-     * Make a QueryString with the given parameters('?' is excluded).
+     * Prepare the request data with the given parameters in the form of x-www-form-urlencoded.
      *
      * @param parameters      [Nullable] A Map that contains some parameters/Empty.
      * @param requestEncoding [Nullable] Encoding for the request's parameters.
      *
-     * @return QueryString (A String like "name1=value1&name2=value2&").
+     * @return A String like "name1=value1&name2=value2"
      *
      * @throws UnsupportedEncodingException
      */
-    private String createQueryString(Map<String, Object> parameters, String requestEncoding)
+    private String createRequestData(Map<String, Object> parameters, String requestEncoding)
             throws UnsupportedEncodingException
     {
         if(parameters != null)
@@ -397,7 +388,15 @@ public final class HttpClient
         return object == null ? "" : object.toString();
     }
     //endregion Methods-------------------------------------------------------------------------------------------------
-    //region Inner class------------------------------------------------------------------------------------------------
+    //region Inner classes----------------------------------------------------------------------------------------------
+
+    /**
+     * Singleton instance holder
+     */
+    private static class SingletonHolder
+    {
+        private static final HttpClient INSTANCE = new HttpClient();
+    }
 
     /**
      * Hold attributes for a new request which is going to be send out but still has other attributes to add.

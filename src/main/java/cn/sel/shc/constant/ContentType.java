@@ -1,6 +1,6 @@
 package cn.sel.shc.constant;
 
-class ContentType
+public class ContentType
 {
     public static final String TEXT = "text/plain";
     public static final String PAGE = "text/html";
