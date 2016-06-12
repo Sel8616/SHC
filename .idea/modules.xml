@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HSharp.iml" filepath="$PROJECT_DIR$/HSharp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shc.iml" filepath="$PROJECT_DIR$/.idea/modules/shc.iml" />
     </modules>
   </component>
 </project>

@@ -1,6 +1,6 @@
-package cn.sel.hsharp.core;
+package cn.sel.shc.core;
 
-import cn.sel.hsharp.constant.RequestError;
+import cn.sel.shc.constant.RequestError;
 
 import java.net.HttpURLConnection;
 import java.util.HashSet;
@@ -57,15 +57,15 @@ public abstract class ResponseHandler
      */
     void handleResponse(int requestId, Response response)
     {
-        if (response != null)
+        if(response != null)
         {
-            int statusCode = response.StatusCode;
-            RequestError errorCode = response.ErrorCode;
-            if (REQUEST_SET.contains(requestId))
+            int statusCode = response.getStatusCode();
+            RequestError errorCode = response.getErrorCode();
+            if(REQUEST_SET.contains(requestId))
             {//This request is still in the sequence. In other case, it should be ignored.
                 REQUEST_SET.remove(requestId);
                 onFinished(requestId);
-                switch (statusCode)
+                switch(statusCode)
                 {
                     case 0:
                         onError(requestId, errorCode);
@@ -74,7 +74,7 @@ public abstract class ResponseHandler
                         onSuccess(requestId, response);
                         break;
                     default:
-                        onFailure(requestId, response.StatusCode);
+                        onFailure(requestId, response.getStatusCode());
                         break;
                 }
             }
@@ -100,7 +100,7 @@ public abstract class ResponseHandler
      */
     public boolean cancelTask(int requestId)
     {
-        if (REQUEST_SET.contains(requestId))
+        if(REQUEST_SET.contains(requestId))
         {
             REQUEST_SET.remove(requestId);
             return true;

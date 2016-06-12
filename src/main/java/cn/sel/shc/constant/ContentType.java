@@ -1,4 +1,4 @@
-package cn.sel.hsharp.constant;
+package cn.sel.shc.constant;
 
 class ContentType
 {

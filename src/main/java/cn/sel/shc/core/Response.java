@@ -1,6 +1,6 @@
-package cn.sel.hsharp.core;
+package cn.sel.shc.core;
 
-import cn.sel.hsharp.constant.RequestError;
+import cn.sel.shc.constant.RequestError;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -9,14 +9,14 @@ import java.util.Map;
 
 public class Response
 {
-    URL URL;
-    int StatusCode;
-    String ContentType;
-    String ContentEncoding;
-    int ContentLength;
-    byte[] ContentBytes;
-    RequestError ErrorCode;
-    Map<String, List<String>> Headers;
+    private URL URL;
+    private int StatusCode;
+    private String ContentType;
+    private String ContentEncoding;
+    private int ContentLength;
+    private byte[] ContentBytes;
+    private RequestError ErrorCode;
+    private Map<String, List<String>> Headers;
 
     public URL getURL()
     {
@@ -68,15 +68,25 @@ public class Response
         ContentLength = contentLength;
     }
 
+    public byte[] getContentBytes()
+    {
+        return ContentBytes;
+    }
+
+    public void setContentBytes(byte[] contentBytes)
+    {
+        ContentBytes = contentBytes;
+    }
+
     public String getContentString()
     {
         try
         {
-            if (ContentEncoding != null && ContentEncoding.length() > 0)
+            if(ContentEncoding != null && ContentEncoding.length() > 0)
             {
                 return new String(ContentBytes, ContentEncoding);
             }
-        } catch (UnsupportedEncodingException e)
+        } catch(UnsupportedEncodingException e)
         {
             e.printStackTrace();
         }
@@ -121,25 +131,25 @@ public class Response
 
     private String getHeadersString()
     {
-        if (Headers != null)
+        if(Headers != null)
         {
             String result = "";
-            for (Map.Entry<String, List<String>> entry : Headers.entrySet())
+            for(Map.Entry<String, List<String>> entry : Headers.entrySet())
             {
                 String string = "[";
                 List<String> values = entry.getValue();
-                for (String v : values)
+                for(String v : values)
                 {
                     string += v + ',';
                 }
-                if (values.size() > 0)
+                if(values.size() > 0)
                 {
                     string = string.substring(0, string.lastIndexOf(','));
                 }
                 string += "]";
                 result += String.format("%s:%s,", entry.getKey(), string);
             }
-            if (Headers.size() > 0)
+            if(Headers.size() > 0)
             {
                 result = result.substring(0, result.lastIndexOf(','));
             }

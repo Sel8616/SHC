@@ -1,21 +1,17 @@
-![HSharp](https://git.oschina.net/sel/R/raw/master/img/java_logo.png)
+![SHC](https://git.oschina.net/sel/R/raw/master/img/java_logo.png)
 
-#HSharp
+#SHC
 
 ###⿻ About
 ***
-__HSharp__ is a simple and lightweight HTTP client based on java.net.HttpURLConnection.
+__SHC__ is a simple and lightweight HTTP client based on java.net.HttpURLConnection.
 
-[--> Download lib JAR <--](https://git.oschina.net/sel/R/raw/master/lib/HSharp.jar "Download lib JAR")
-
-[--> Download demo(Command) <--](https://git.oschina.net/sel/R/raw/master/demo/HSharp_Demo.jar "Download demo(Command)")
-
-[--> Download demo(Android) <--](https://git.oschina.net/sel/R/raw/master/demo/HSharp_Demo.apk "Download demo(Android)")
+[--> Maven <--]
 
 
 ###♨ Features
 ***
-* Singleton client.
+* Singleton http client.
 
 * Multi-process for concurrent requests.
 
@@ -24,7 +20,7 @@ __HSharp__ is a simple and lightweight HTTP client based on java.net.HttpURLConn
 
 ###☀ Notice
 ***
-* JDK1.7+ is Mandatory.
+* JDK1.8+ is Mandatory.
 
 
 ###⚘ Next

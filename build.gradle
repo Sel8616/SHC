@@ -1,17 +1,70 @@
-group 'cn.sel'
-version '0.1-SNAPSHOT'
-
-apply plugin: 'java'
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-allprojects {
+buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
 }
 
+plugins {
+    id "com.jfrog.bintray" version "1.6"
+}
+
+group 'cn.sel'
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: "com.jfrog.bintray"
+
+repositories {
+    jcenter()
+}
+
 dependencies {
-    compile fileTree(dir: 'lib', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    encoding = "utf-8"
+    from sourceSets.main.allJava
+}
+
+bintray {
+    final Properties properties = new Properties()
+    properties.load(new FileInputStream("${System.properties['user.home']}/.bintray/bintray.properties"))
+    user = properties.getProperty("BINTRAY_USERNAME")
+    key = properties.getProperty("BINTRAY_API_KEY")
+    pkg {
+        publish = true
+        repo = 'maven'
+        name = 'shc'
+        version {
+            name = project.version
+//            mavenCentralSync {
+//                sync = true
+//                user = properties.getProperty("MAVEN_USERNAME")
+//                password = properties.getProperty("MAVEN_PASSWORD")
+//                close = '1'
+//            }
+        }
+    }
+    publications = ['maven']
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+            artifact sourceJar
+        }
+    }
+}
+
+model {
+    tasks.generatePomFileForMavenPublication {
+        destination = file("$buildDir/classes/main/META-INF/maven/$project.group/$project.name/pom.xml")
+    }
 }

@@ -1,8 +1,8 @@
-import cn.sel.hsharp.constant.RequestError;
-import cn.sel.hsharp.constant.StandardEncoding;
-import cn.sel.hsharp.core.HttpClient;
-import cn.sel.hsharp.core.Response;
-import cn.sel.hsharp.core.ResponseHandler;
+import cn.sel.shc.constant.RequestError;
+import cn.sel.shc.constant.StandardEncoding;
+import cn.sel.shc.core.HttpClient;
+import cn.sel.shc.core.Response;
+import cn.sel.shc.core.ResponseHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,32 +47,32 @@ public class demo
         {
             int tag;
             String url, method, encoding;
-            while (true)
+            while(true)
             {
                 try
                 {
                     System.out.print("INPUT >>> Request ID:");
                     tag = Integer.parseInt(reader.readLine());
                     break;
-                } catch (NumberFormatException | IOException e)
+                } catch(NumberFormatException | IOException e)
                 {
                     e.printStackTrace();
                 }
             }
             System.out.print("INPUT >>> URL:");
             url = reader.readLine();
-            while (true)
+            while(true)
             {
                 System.out.println("CHOOSE >>> Method: 1-GET  2-POST  3-PUT  4-DELETE");
                 method = reader.readLine();
-                if (method.equals("1") || method.equals("2") || method.equals("3") || method.equals("4"))
+                if(method.equals("1") || method.equals("2") || method.equals("3") || method.equals("4"))
                 {
                     break;
                 }
             }
             System.out.println("CHOOSE >>> RequestEncoding: 1-ISO8859-1  2-UTF8  3-GB2312  4-GBK  5-BIG5  OR Input Directly...");
             encoding = reader.readLine();
-            switch (encoding)
+            switch(encoding)
             {
                 case "1":
                     encoding = StandardEncoding.ISO;
@@ -93,7 +93,7 @@ public class demo
                     break;
             }
             HttpClient httpClient = HttpClient.getInstance();
-            switch (method)
+            switch(method)
             {
                 case "1":
                     httpClient.prepare().setRequestEncoding(encoding).get(tag, url, null, RESPONSE_HANDLER);
@@ -108,7 +108,7 @@ public class demo
                     httpClient.prepare().setRequestEncoding(encoding).delete(tag, url, null, RESPONSE_HANDLER);
                     break;
             }
-        } catch (IOException e)
+        } catch(IOException e)
         {
             e.printStackTrace();
         }
