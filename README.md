@@ -6,8 +6,13 @@
 ***
 __SHC__ is a simple and lightweight HTTP client based on java.net.HttpURLConnection.
 
-[--> Maven <--]
+#### Dependency Config
 
+|groupId|artifactId|version|
+|:-----:|:--------:|:-----:|
+|cn.sel |shc       |0.1    |
+
+[![Download](https://api.bintray.com/packages/sel8616/maven/shc/images/download.svg)](https://bintray.com/sel8616/maven/shc/_latestVersion)
 
 ###♨ Features
 ***
