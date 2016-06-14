@@ -44,10 +44,6 @@ public final class HttpClient
      */
     private static final String PROTOCOL_HTTPS = "HTTPS";
     /**
-     * Default size of thread pool
-     */
-    private static final int DEFAULT_THREAD_POOL_SIZE = 8;
-    /**
      * Default Connection Timeout(ms)
      */
     private static final int DEFAULT_TIMEOUT_CONN = 5000;
@@ -55,32 +51,21 @@ public final class HttpClient
      * Default Read Timeout(ms)
      */
     private static final int DEFAULT_TIMEOUT_READ = 10000;
-    /**
-     * Lock
-     */
-    private final Object LOCK = new Object();
     //endregion Constants-----------------------------------------------------------------------------------------------
+
     //region Properties-------------------------------------------------------------------------------------------------
     /**
      * Thread pool
      */
-    private static ExecutorService THREAD_POOL = null;
-    /**
-     * Connection Timeout(ms)
-     */
-    private static int TIMEOUT_CONN = 0;
-    /**
-     * Data Timeout(ms)
-     */
-    private static int TIMEOUT_READ = 0;
+    private static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
     /**
      * Request will be encoded with this unless the 'requestEncoding' parameter was specified.
      * It will be initialized as {@link StandardEncoding#UTF_8}
      */
-    private static String DEFAULT_REQUEST_ENCODING = null;
+    private static final String DEFAULT_REQUEST_ENCODING = Charset.defaultCharset().name();
     //endregion Properties----------------------------------------------------------------------------------------------
-    //region Constructors & Initialization------------------------------------------------------------------------------
 
+    //region Constructors & Initialization------------------------------------------------------------------------------
     /**
      * Prevent instantiation by other class
      */
@@ -95,34 +80,11 @@ public final class HttpClient
      */
     public static HttpClient getInstance()
     {
-        DEFAULT_REQUEST_ENCODING = Charset.defaultCharset().name();
-        TIMEOUT_CONN = DEFAULT_TIMEOUT_CONN;
-        TIMEOUT_READ = DEFAULT_TIMEOUT_READ;
-        THREAD_POOL = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE);
-        return SingletonHolder.INSTANCE;
-    }
-
-    /**
-     * Get the singleton instance, and init properties with specific values.
-     *
-     * @param connectionTimeout      {@link #TIMEOUT_CONN}
-     * @param readTimeout            {@link #TIMEOUT_READ}
-     * @param threadPoolSize         {@link #THREAD_POOL} size
-     * @param defaultRequestEncoding {@link #DEFAULT_REQUEST_ENCODING}
-     *
-     * @return {@link SingletonHolder#INSTANCE}
-     */
-    public static HttpClient getInstance(int connectionTimeout, int readTimeout, int threadPoolSize, String defaultRequestEncoding)
-    {
-        DEFAULT_REQUEST_ENCODING = defaultRequestEncoding != null && defaultRequestEncoding.length() > 0 ? Charset.forName(defaultRequestEncoding).name() : Charset.defaultCharset().name();
-        TIMEOUT_CONN = connectionTimeout > 0 ? connectionTimeout : DEFAULT_TIMEOUT_CONN;
-        TIMEOUT_READ = readTimeout > 0 ? readTimeout : DEFAULT_TIMEOUT_READ;
-        THREAD_POOL = Executors.newFixedThreadPool(threadPoolSize > 0 ? threadPoolSize : DEFAULT_THREAD_POOL_SIZE);
         return SingletonHolder.INSTANCE;
     }
     //endregion Constructors & Initialization---------------------------------------------------------------------------
-    //region Methods----------------------------------------------------------------------------------------------------
 
+    //region Methods----------------------------------------------------------------------------------------------------
     /**
      * Create a holder to cache custom headers and connection attributes.
      *
@@ -130,7 +92,7 @@ public final class HttpClient
      */
     public final RequestHolder prepare()
     {
-        return new RequestHolder(this);
+        return new RequestHolder();
     }
 
     /**
@@ -141,7 +103,7 @@ public final class HttpClient
      */
     public final void get(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.GET, responseHandler, null, null, null);
+        sendHttpRequest(requestId, urlString, parameters, RequestMethod.GET, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
     }
 
     /**
@@ -152,7 +114,7 @@ public final class HttpClient
      */
     public final void post(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, responseHandler, null, null, null);
+        sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
     }
 
     /**
@@ -163,7 +125,7 @@ public final class HttpClient
      */
     public final void put(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.PUT, responseHandler, null, null, null);
+        sendHttpRequest(requestId, urlString, parameters, RequestMethod.PUT, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
     }
 
     /**
@@ -174,7 +136,7 @@ public final class HttpClient
      */
     public final void delete(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, responseHandler, null, null, null);
+        sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
     }
 
     /**
@@ -184,12 +146,12 @@ public final class HttpClient
      * @param urlString       [Nullable] The string of the host urlString.
      * @param parameters      [Nullable] A Map that contains some parameters/Empty.
      * @param requestMethod   [Nullable] {@link RequestMethod}
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
      * @param requestEncoding [Nullable] Encoding for the request's parameters.
      * @param setHeaders      [Nullable] A Map that contains some http headers which should be set to the request.
      * @param addHeaders      [Nullable] A Map that contains some http headers which should be added to the request.
+     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
      */
-    void sendHttpRequest(int requestId, String urlString, Map<String, Object> parameters, RequestMethod requestMethod, ResponseHandler responseHandler, String requestEncoding, Map<String, String> setHeaders, Map<String, List<String>> addHeaders)
+    void sendHttpRequest(int requestId, String urlString, Map<String, Object> parameters, RequestMethod requestMethod, String requestEncoding, int timeoutConn, int timeoutRead, Map<String, String> setHeaders, Map<String, List<String>> addHeaders, ResponseHandler responseHandler)
     {
         Objects.requireNonNull(responseHandler);
         THREAD_POOL.submit(()->{
@@ -197,7 +159,7 @@ public final class HttpClient
             Response response = new Response();
             try
             {
-                HttpURLConnection connection = initConnection(urlString, requestMethod, parameters, requestEncoding, setHeaders, addHeaders);
+                HttpURLConnection connection = initConnection(urlString, requestMethod, parameters, requestEncoding, timeoutConn, timeoutRead, setHeaders, addHeaders);
                 if(connection != null)
                 {
                     connection.connect();
@@ -266,6 +228,8 @@ public final class HttpClient
      * @param requestMethod   [NonNull] {@link RequestMethod}
      * @param parameters      [Nullable] A Map that contains some parameters/Empty.
      * @param requestEncoding [Nullable] Encoding for the request's parameters.
+     * @param timeoutConn     Connection Timeout(ms)
+     * @param timeoutRead     Data Timeout(ms)
      * @param setHeaders      [Nullable] A Map that contains some http headers which should be set to the request.
      * @param addHeaders      [Nullable] A Map that contains some http headers which should be added to the request.
      *
@@ -276,7 +240,7 @@ public final class HttpClient
      * @throws UnsupportedEncodingException
      * @throws MalformedURLException
      */
-    private HttpURLConnection initConnection(String urlString, RequestMethod requestMethod, Map<String, Object> parameters, String requestEncoding, Map<String, String> setHeaders, Map<String, List<String>> addHeaders)
+    private HttpURLConnection initConnection(String urlString, RequestMethod requestMethod, Map<String, Object> parameters, String requestEncoding, int timeoutConn, int timeoutRead, Map<String, String> setHeaders, Map<String, List<String>> addHeaders)
             throws IOException, UnsupportedEncodingException, MalformedURLException, ProtocolException
     {
         Objects.requireNonNull(urlString);
@@ -324,8 +288,8 @@ public final class HttpClient
                 }
             }
             connection.setRequestMethod(requestMethod.name());
-            connection.setConnectTimeout(TIMEOUT_CONN);
-            connection.setReadTimeout(TIMEOUT_READ);
+            connection.setConnectTimeout(timeoutConn > 0 ? timeoutConn : DEFAULT_TIMEOUT_CONN);
+            connection.setReadTimeout(timeoutRead > 0 ? timeoutRead : DEFAULT_TIMEOUT_READ);
             connection.setDoInput(true);
             if(requestMethod == RequestMethod.POST || requestMethod == RequestMethod.PUT)
             {
@@ -403,8 +367,8 @@ public final class HttpClient
         return object == null ? "" : object.toString();
     }
     //endregion Methods-------------------------------------------------------------------------------------------------
-    //region Inner classes----------------------------------------------------------------------------------------------
 
+    //region Inner classes----------------------------------------------------------------------------------------------
     /**
      * Singleton instance holder
      */
@@ -419,13 +383,17 @@ public final class HttpClient
     public static class RequestHolder
     {
         /**
-         * For whom to hold the attributes.
-         */
-        private final HttpClient client;
-        /**
          * To encode the request parameters.
          */
         private String REQUEST_ENCODING;
+        /**
+         * Connection Timeout(ms)
+         */
+        private int TIMEOUT_CONN = 0;
+        /**
+         * Data Timeout(ms)
+         */
+        private int TIMEOUT_READ = 0;
         /**
          * Custom headers to set
          */
@@ -435,11 +403,6 @@ public final class HttpClient
          */
         private final Map<String, List<String>> ADD_HEADERS = new HashMap<>();
 
-        RequestHolder(HttpClient httpClient)
-        {
-            client = httpClient;
-        }
-
         /**
          * @param requestEncoding Value of {@link #REQUEST_ENCODING}
          *
@@ -448,6 +411,28 @@ public final class HttpClient
         public final RequestHolder setRequestEncoding(String requestEncoding)
         {
             REQUEST_ENCODING = requestEncoding;
+            return this;
+        }
+
+        /**
+         * @param connTimeout Value of {@link #TIMEOUT_CONN}
+         *
+         * @return this
+         */
+        public final RequestHolder setConnTimeout(int connTimeout)
+        {
+            TIMEOUT_CONN = connTimeout;
+            return this;
+        }
+
+        /**
+         * @param readTimeout Value of {@link #TIMEOUT_READ}
+         *
+         * @return this
+         */
+        public final RequestHolder setReadTimeout(int readTimeout)
+        {
+            TIMEOUT_READ = readTimeout;
             return this;
         }
 
@@ -502,7 +487,7 @@ public final class HttpClient
          */
         public final void get(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
         {
-            client.sendHttpRequest(requestId, urlString, parameters, RequestMethod.GET, responseHandler, REQUEST_ENCODING, SET_HEADERS, ADD_HEADERS);
+            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.GET, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
         }
 
         /**
@@ -513,7 +498,7 @@ public final class HttpClient
          */
         public final void post(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
         {
-            client.sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, responseHandler, REQUEST_ENCODING, SET_HEADERS, ADD_HEADERS);
+            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
         }
 
         /**
@@ -524,7 +509,7 @@ public final class HttpClient
          */
         public final void put(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
         {
-            client.sendHttpRequest(requestId, urlString, parameters, RequestMethod.PUT, responseHandler, REQUEST_ENCODING, SET_HEADERS, ADD_HEADERS);
+            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.PUT, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
         }
 
         /**
@@ -535,7 +520,7 @@ public final class HttpClient
          */
         public final void delete(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
         {
-            client.sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, responseHandler, REQUEST_ENCODING, SET_HEADERS, ADD_HEADERS);
+            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
         }
     }
     //endregion---------------------------------------------------------------------------------------------------------
