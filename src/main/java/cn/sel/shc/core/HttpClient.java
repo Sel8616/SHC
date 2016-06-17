@@ -52,7 +52,6 @@ public final class HttpClient
      */
     private static final int DEFAULT_TIMEOUT_READ = 10000;
     //endregion Constants-----------------------------------------------------------------------------------------------
-
     //region Properties-------------------------------------------------------------------------------------------------
     /**
      * Thread pool
@@ -64,8 +63,8 @@ public final class HttpClient
      */
     private static final String DEFAULT_REQUEST_ENCODING = Charset.defaultCharset().name();
     //endregion Properties----------------------------------------------------------------------------------------------
-
     //region Constructors & Initialization------------------------------------------------------------------------------
+
     /**
      * Prevent instantiation by other class
      */
@@ -83,8 +82,8 @@ public final class HttpClient
         return SingletonHolder.INSTANCE;
     }
     //endregion Constructors & Initialization---------------------------------------------------------------------------
-
     //region Methods----------------------------------------------------------------------------------------------------
+
     /**
      * Create a holder to cache custom headers and connection attributes.
      *
@@ -367,8 +366,8 @@ public final class HttpClient
         return object == null ? "" : object.toString();
     }
     //endregion Methods-------------------------------------------------------------------------------------------------
-
     //region Inner classes----------------------------------------------------------------------------------------------
+
     /**
      * Singleton instance holder
      */

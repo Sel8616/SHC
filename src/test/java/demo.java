@@ -29,9 +29,10 @@ public class demo
     private static final ResponseHandler RESPONSE_HANDLER = new ResponseHandler()
     {
         @Override
-        public void onFinished(int requestId)
+        public boolean onFinished(int requestId)
         {
             System.out.println("Request(" + requestId + ") finished.");
+            return false;
         }
 
         @Override

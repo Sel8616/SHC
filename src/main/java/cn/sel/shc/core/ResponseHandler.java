@@ -36,11 +36,13 @@ public abstract class ResponseHandler
     private final Set<Integer> REQUEST_SET = new HashSet<>();
 
     /**
-     * The request was finished : Maybe success/fail/error
+     * The request was finished(success/fail/error), and one of the other 3 abstract methods will be invoked according to the status code if 'false' was returned.
      *
      * @param requestId requestId
+     *
+     * @return <li>true</li>The response has been handled in this method.<li>false</li>Not handled yet.
      */
-    protected abstract void onFinished(int requestId);
+    protected abstract boolean onFinished(int requestId);
 
     /**
      * The server returned 200 and given an expected result.
@@ -79,18 +81,20 @@ public abstract class ResponseHandler
             if(REQUEST_SET.contains(requestId))
             {//This request is still in the sequence. In other case, it should be ignored.
                 REQUEST_SET.remove(requestId);
-                onFinished(requestId);
-                switch(statusCode)
+                if(!onFinished(requestId))
                 {
-                    case 0:
-                        onError(requestId, errorCode);
-                        break;
-                    case HttpURLConnection.HTTP_OK://200
-                        onSuccess(requestId, response);
-                        break;
-                    default:
-                        onFailure(requestId, response.getStatusCode());
-                        break;
+                    switch(statusCode)
+                    {
+                        case 0:
+                            onError(requestId, errorCode);
+                            break;
+                        case HttpURLConnection.HTTP_OK://200
+                            onSuccess(requestId, response);
+                            break;
+                        default:
+                            onFailure(requestId, response.getStatusCode());
+                            break;
+                    }
                 }
             }
         }
