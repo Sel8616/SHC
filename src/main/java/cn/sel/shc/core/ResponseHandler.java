@@ -42,7 +42,7 @@ public abstract class ResponseHandler
      *
      * @return <li>true</li>The response has been handled in this method.<li>false</li>Not handled yet.
      */
-    protected abstract boolean onFinished(int requestId);
+    protected abstract boolean onFinished(int requestId, Response response);
 
     /**
      * The server returned 200 and given an expected result.
@@ -79,9 +79,9 @@ public abstract class ResponseHandler
             int statusCode = response.getStatusCode();
             RequestError errorCode = response.getErrorCode();
             if(REQUEST_SET.contains(requestId))
-            {//This request is still in the sequence. In other case, it should be ignored.
+            {//This request which is still in the sequence will be handled. In other case, it should be ignored.
                 REQUEST_SET.remove(requestId);
-                if(!onFinished(requestId))
+                if(!onFinished(requestId, response))
                 {
                     switch(statusCode)
                     {

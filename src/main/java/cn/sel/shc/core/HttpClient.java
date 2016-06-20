@@ -108,12 +108,32 @@ public final class HttpClient
     /**
      * @param requestId       Registered in {@link ResponseHandler}
      * @param urlString       [Nullable] The string of the host urlString.
+     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     */
+    public final void get(int requestId, String urlString, ResponseHandler responseHandler)
+    {
+        sendHttpRequest(requestId, urlString, null, RequestMethod.GET, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+    }
+
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param urlString       [Nullable] The string of the host urlString.
      * @param parameters      [Nullable] A Map that contains some parameters/Empty.
      * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
      */
     public final void post(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
     {
         sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+    }
+
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param urlString       [Nullable] The string of the host urlString.
+     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     */
+    public final void post(int requestId, String urlString, ResponseHandler responseHandler)
+    {
+        sendHttpRequest(requestId, urlString, null, RequestMethod.POST, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
     }
 
     /**
@@ -130,12 +150,32 @@ public final class HttpClient
     /**
      * @param requestId       Registered in {@link ResponseHandler}
      * @param urlString       [Nullable] The string of the host urlString.
+     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     */
+    public final void put(int requestId, String urlString, ResponseHandler responseHandler)
+    {
+        sendHttpRequest(requestId, urlString, null, RequestMethod.PUT, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+    }
+
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param urlString       [Nullable] The string of the host urlString.
      * @param parameters      [Nullable] A Map that contains some parameters/Empty.
      * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
      */
     public final void delete(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
     {
         sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+    }
+
+    /**
+     * @param requestId       Registered in {@link ResponseHandler}
+     * @param urlString       [Nullable] The string of the host urlString.
+     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     */
+    public final void delete(int requestId, String urlString, ResponseHandler responseHandler)
+    {
+        sendHttpRequest(requestId, urlString, null, RequestMethod.DELETE, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
     }
 
     /**
@@ -492,12 +532,32 @@ public final class HttpClient
         /**
          * @param requestId       Registered in {@link ResponseHandler}
          * @param urlString       [Nullable] The string of the host urlString.
+         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+         */
+        public final void get(int requestId, String urlString, ResponseHandler responseHandler)
+        {
+            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.GET, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
+        }
+
+        /**
+         * @param requestId       Registered in {@link ResponseHandler}
+         * @param urlString       [Nullable] The string of the host urlString.
          * @param parameters      [Nullable] A Map that contains some parameters/Empty.
          * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
          */
         public final void post(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
         {
             getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
+        }
+
+        /**
+         * @param requestId       Registered in {@link ResponseHandler}
+         * @param urlString       [Nullable] The string of the host urlString.
+         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+         */
+        public final void post(int requestId, String urlString, ResponseHandler responseHandler)
+        {
+            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.POST, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
         }
 
         /**
@@ -514,12 +574,32 @@ public final class HttpClient
         /**
          * @param requestId       Registered in {@link ResponseHandler}
          * @param urlString       [Nullable] The string of the host urlString.
+         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+         */
+        public final void put(int requestId, String urlString, ResponseHandler responseHandler)
+        {
+            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.PUT, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
+        }
+
+        /**
+         * @param requestId       Registered in {@link ResponseHandler}
+         * @param urlString       [Nullable] The string of the host urlString.
          * @param parameters      [Nullable] A Map that contains some parameters/Empty.
          * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
          */
         public final void delete(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
         {
             getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
+        }
+
+        /**
+         * @param requestId       Registered in {@link ResponseHandler}
+         * @param urlString       [Nullable] The string of the host urlString.
+         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+         */
+        public final void delete(int requestId, String urlString, ResponseHandler responseHandler)
+        {
+            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.DELETE, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
         }
     }
     //endregion---------------------------------------------------------------------------------------------------------
