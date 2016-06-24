@@ -337,7 +337,7 @@ public final class HttpClient
                 if(requestData != null && requestData.length() > 0)
                 {//Fill request body
                     OutputStream out = connection.getOutputStream();
-                    out.write(requestData.getBytes());
+                    out.write(requestData.getBytes(requestEncoding));
                     out.flush();
                     out.close();
                 }
