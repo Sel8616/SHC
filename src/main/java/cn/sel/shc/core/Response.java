@@ -15,8 +15,6 @@
  */
 package cn.sel.shc.core;
 
-import cn.sel.shc.constant.RequestError;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
@@ -36,7 +34,6 @@ public class Response
     private long lastModified;
     private String ifNoneMatch;
     private String ETag;
-    private RequestError requestError;
     private byte[] contentBytes;
     private Map<String, List<String>> headers;
 
@@ -136,16 +133,6 @@ public class Response
         return encoding != null && encoding.length() > 0 ? new String(contentBytes, encoding) : getContentString();
     }
 
-    public RequestError getRequestError()
-    {
-        return requestError;
-    }
-
-    void setRequestError(RequestError requestError)
-    {
-        this.requestError = requestError;
-    }
-
     public long getIfModifiedSince()
     {
         return ifModifiedSince;
@@ -217,19 +204,19 @@ public class Response
         return headers.get(name);
     }
 
-    public Map<String, List<String>> getHeaders()
+    public Map<String, List<String>> getHeaderMap()
     {
         return headers;
+    }
+
+    public String getHeaderMapString()
+    {
+        return String.valueOf(headers);
     }
 
     void setHeaders(Map<String, List<String>> headerFields)
     {
         headers = headerFields;
-    }
-
-    public String getHeadersString()
-    {
-        return String.valueOf(headers);
     }
 
     @Override
@@ -248,7 +235,6 @@ public class Response
                 ", lastModified=" + lastModified +
                 ", ifNoneMatch='" + ifNoneMatch + '\'' +
                 ", ETag='" + ETag + '\'' +
-                ", requestError=" + requestError +
                 ", headers=" + headers +
                 '}';
     }

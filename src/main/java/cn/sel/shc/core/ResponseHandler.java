@@ -15,8 +15,6 @@
  */
 package cn.sel.shc.core;
 
-import cn.sel.shc.constant.RequestError;
-
 import java.net.HttpURLConnection;
 
 /**
@@ -34,7 +32,7 @@ public abstract class ResponseHandler
      * @param requestId An integer value to identify the request.
      * @param response  response
      *
-     * @return <li>true</li>The response has been handled in this method.<li>false</li>Not handled yet.
+     * @return <li>true: The response has been handled in this method.</li><li>false: Not handled yet.</li>
      */
     protected abstract boolean onFinished(int requestId, Response response);
 
@@ -57,10 +55,10 @@ public abstract class ResponseHandler
     /**
      * The request hasn't been sent out.
      *
-     * @param requestId    An integer value to identify the request.
-     * @param requestError requestError
+     * @param requestId An integer value to identify the request.
+     * @param error     Error message.
      */
-    protected abstract void onError(int requestId, RequestError requestError);
+    protected abstract void onError(int requestId, String error);
 
     /**
      * @param requestId See {@link HttpClient}
@@ -71,13 +69,12 @@ public abstract class ResponseHandler
         if(response != null)
         {
             int statusCode = response.getStatusCode();
-            RequestError errorCode = response.getRequestError();
             if(!onFinished(requestId, response))
             {
                 switch(statusCode)
                 {
                     case 0:
-                        onError(requestId, errorCode);
+                        onError(requestId, response.getContentString());
                         break;
                     case HttpURLConnection.HTTP_OK://200
                         onSuccess(requestId, response);

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import cn.sel.shc.constant.RequestError;
 import cn.sel.shc.constant.StandardEncoding;
 import cn.sel.shc.core.HttpClient;
 import cn.sel.shc.core.RequestHolder;
@@ -50,9 +49,9 @@ public class test
         }
 
         @Override
-        protected void onError(int requestId, RequestError requestError)
+        protected void onError(int requestId, String error)
         {
-            logger.info(String.format("Request(%d)\tResult:Error(%s)", requestId, requestError));
+            logger.info(String.format("Request(%d)\tResult:Error(%s)", requestId, error));
         }
     };
 
@@ -65,6 +64,6 @@ public class test
         RequestHolder requestHolder = HttpClient.getInstance().prepare();
         requestHolder.setHeader("TOKEN", "TOKEN_STRING");
         requestHolder.setRequestEncoding(StandardEncoding.UTF_8);
-        requestHolder.get(0, "http://127.0.0.1:8080", params, RESPONSE_HANDLER);
+        requestHolder.get(0, "http://192.56.23.55", params, RESPONSE_HANDLER);
     }
 }

@@ -15,14 +15,16 @@
  */
 package cn.sel.shc.core;
 
-import cn.sel.shc.constant.RequestError;
 import cn.sel.shc.constant.RequestMethod;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,6 +47,7 @@ public final class HttpClient
     private static final String PROTOCOL_HTTPS = "HTTPS";
     private static final int DEFAULT_TIMEOUT_CONN = 5000;
     private static final int DEFAULT_TIMEOUT_READ = 10000;
+    private static final boolean DEFAULT_USE_CACHES = false;
     private static final String DEFAULT_REQUEST_ENCODING = Charset.defaultCharset().name();
     private final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
 
@@ -73,151 +76,110 @@ public final class HttpClient
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void get(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.GET, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.GET, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void get(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.GET, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.GET, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void post(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.POST, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.POST, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void post(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.POST, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.POST, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void put(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.PUT, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.PUT, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void put(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.PUT, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.PUT, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void delete(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.DELETE, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.DELETE, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
-     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int, boolean)
      */
     public void delete(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.DELETE, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
+        sendHttpRequest(requestId, url, RequestMethod.DELETE, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     /**
      * Send the HTTP request
      *
-     * @param requestId   An integer value to identify the request.
-     * @param url         [NonNull] The string of the host url.
-     * @param method      [NonNull] {@link RequestMethod}
-     * @param parameters  [Nullable] A Map that contains some parameters.
-     * @param handler     [NonNull] Implementation of {@link ResponseHandler}
-     * @param encoding    [Nullable] Encoding for the request's parameters.
-     * @param setHeaders  [Nullable] A Map that contains some http headers which should be set to the request.
-     * @param addHeaders  [Nullable] A Map that contains some http headers which should be added to the request.
-     * @param timeoutConn Connection timeout(ms)
-     * @param timeoutRead Data timeout(ms)
+     * @param requestId       An integer value to identify the request.
+     * @param urlString       [NonNull] The string of the host urlString.
+     * @param requestMethod   [NonNull] {@link RequestMethod}
+     * @param parameters      [Nullable] A Map that contains some parameters.
+     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @param requestEncoding [Nullable] Encoding for the request's parameters.
+     * @param setHeaders      [Nullable] A Map that contains some http headers which should be set to the request.
+     * @param addHeaders      [Nullable] A Map that contains some http headers which should be added to the request.
+     * @param timeoutConn     Connection timeout(ms).
+     * @param timeoutRead     Data timeout(ms).
+     * @param ifUseCaches     Use caches or not.
      */
-    void sendHttpRequest(int requestId, String url, RequestMethod method, Map<String, Object> parameters, ResponseHandler handler, String encoding, Map<String, String> setHeaders, Map<String, List<String>> addHeaders, int timeoutConn, int timeoutRead)
+    void sendHttpRequest(int requestId, String urlString, RequestMethod requestMethod, Map<String, Object> parameters, ResponseHandler responseHandler, String requestEncoding, Map<String, String> setHeaders, Map<String, List<String>> addHeaders, int timeoutConn, int timeoutRead, boolean ifUseCaches)
     {
-        Objects.requireNonNull(handler);
+        Objects.requireNonNull(urlString);
+        Objects.requireNonNull(requestMethod);
+        Objects.requireNonNull(responseHandler);
         THREAD_POOL.submit(()->{
             HttpURLConnection connection = null;
             Response response = new Response();
-            response.setStatusCode(0);
             try
             {
-                response.setUrl(new URL(url));
-                connection = initConnection(url, method, parameters, encoding, timeoutConn, timeoutRead, setHeaders, addHeaders);
-                if(connection != null)
-                {
-                    connection.connect();
-                    response.setUrl(connection.getURL());
-                    response.setStatusCode(connection.getResponseCode());
-                    response.setResponseMessage(connection.getResponseMessage());
-                    response.setContentType(connection.getContentType());
-                    response.setContentEncoding(connection.getContentEncoding());
-                    response.setContentLength(connection.getContentLength());
-                    response.setIfModifiedSince(connection.getIfModifiedSince());
-                    response.setLastModified(connection.getLastModified());
-                    response.setIfNoneMatch(connection.getHeaderField("If-None-Match"));
-                    response.setETag(connection.getHeaderField("ETag"));
-                    response.setDate(connection.getDate());
-                    response.setExpires(connection.getExpiration());
-                    response.setHeaders(connection.getHeaderFields());
-                    InputStream inputStream = response.getStatusCode() == HttpURLConnection.HTTP_OK ? connection.getInputStream() : connection.getErrorStream();
-                    if(inputStream != null)
-                    {
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        byte[] buffer = new byte[1024];
-                        int len;
-                        while((len = inputStream.read(buffer)) != -1)
-                        {
-                            outputStream.write(buffer, 0, len);
-                        }
-                        response.setContentBytes(outputStream.toByteArray());
-                        if(response.getContentLength() < 0)
-                        {
-                            response.setContentLength(response.getContentBytes().length);
-                        }
-                        outputStream.close();
-                        inputStream.close();
-                    }
-                } else
-                {
-                    response.setRequestError(RequestError.INTERNAL);
-                }
-            } catch(UnsupportedEncodingException e)
-            {
-                response.setRequestError(RequestError.INVALID_ENCODING);
-                e.printStackTrace();
-            } catch(MalformedURLException e)
-            {
-                response.setRequestError(RequestError.INVALID_URL);
-                e.printStackTrace();
-            } catch(IOException e)
-            {
-                response.setRequestError(RequestError.NETWORK);
-                e.printStackTrace();
+                boolean bodyNeeded = requestMethod == RequestMethod.POST || requestMethod == RequestMethod.PUT;
+                String requestData = createRequestData(parameters, requestEncoding);
+                URL url = createUrl(urlString, requestMethod, requestData);
+                connection = createConnection(url);
+                setConnectionAttributes(connection, requestMethod.name(), timeoutConn, timeoutRead, bodyNeeded, !bodyNeeded && ifUseCaches);
+                fillRequestHeaders(connection, setHeaders, addHeaders);
+                fillRequestBody(requestEncoding, connection, bodyNeeded, requestData);
+                connection.connect();
+                readResponse(connection, response, url);
             } catch(Exception e)
             {
-                response.setRequestError(RequestError.UNKNOWN);
+                response.setContentBytes(e.getMessage().getBytes());
                 e.printStackTrace();
             } finally
             {
-                handler.handleResponse(requestId, response);
+                responseHandler.handleResponse(requestId, response);
                 if(connection != null)
                 {
                     connection.disconnect();
@@ -227,99 +189,22 @@ public final class HttpClient
     }
 
     /**
-     * Initialize the connection
+     * Get encoded string for the specified object using the specified encoding.
      *
-     * @param urlString       [NonNull] String form of host urlString. A full expression is expected!
-     * @param requestMethod   [NonNull] {@link RequestMethod}
-     * @param parameters      [Nullable] A Map that contains some parameters.
-     * @param requestEncoding [Nullable] Encoding for the request data.
-     * @param timeoutConn     Connection timeout(ms)
-     * @param timeoutRead     Data timeout(ms)
-     * @param setHeaders      [Nullable] A Map that contains some http headers which should be set to the request.
-     * @param addHeaders      [Nullable] A Map that contains some http headers which should be added to the request.
+     * @param object   The object.
+     * @param encoding The encoding name.
      *
-     * @return Prepared HttpURLConnection or Null.
+     * @return Encoded string.
      *
-     * @throws NoSuchElementException
-     * @throws ProtocolException
      * @throws UnsupportedEncodingException
-     * @throws MalformedURLException
      */
-    private HttpURLConnection initConnection(String urlString, RequestMethod requestMethod, Map<String, Object> parameters, String requestEncoding, int timeoutConn, int timeoutRead, Map<String, String> setHeaders, Map<String, List<String>> addHeaders) throws IOException, UnsupportedEncodingException, MalformedURLException, ProtocolException
+    private String encode(Object object, String encoding) throws UnsupportedEncodingException
     {
-        Objects.requireNonNull(urlString);
-        Objects.requireNonNull(requestMethod);
-        String requestData = createRequestData(parameters, requestEncoding);
-        URL url = null;
-        switch(requestMethod)
-        {
-            case GET:
-            case DELETE:
-                url = new URL(requestData != null && requestData.length() > 0 ? urlString + '?' + requestData : urlString);
-                break;
-            case POST:
-            case PUT:
-                url = new URL(urlString);
-                break;
-        }
-        HttpURLConnection connection = null;
-        if(PROTOCOL_HTTP.equalsIgnoreCase(url.getProtocol()))
-        {
-            connection = (HttpURLConnection)url.openConnection();
-        } else if(PROTOCOL_HTTPS.equalsIgnoreCase(url.getProtocol()))
-        {
-            connection = (HttpsURLConnection)url.openConnection();
-        }
-        if(connection != null)
-        {
-            if(addHeaders != null)
-            {
-                for(Map.Entry<String, List<String>> entry : addHeaders.entrySet())
-                {
-                    String key = entry.getKey();
-                    List<String> values = entry.getValue();
-                    for(String value : values)
-                    {
-                        connection.addRequestProperty(key, value);
-                    }
-                }
-            }
-            if(setHeaders != null)
-            {
-                for(Map.Entry<String, String> entry : setHeaders.entrySet())
-                {
-                    connection.setRequestProperty(entry.getKey(), entry.getValue());
-                }
-            }
-            connection.setRequestMethod(requestMethod.name());
-            connection.setConnectTimeout(timeoutConn > 0 ? timeoutConn : DEFAULT_TIMEOUT_CONN);
-            connection.setReadTimeout(timeoutRead > 0 ? timeoutRead : DEFAULT_TIMEOUT_READ);
-            connection.setDoInput(true);
-            if(requestMethod == RequestMethod.POST || requestMethod == RequestMethod.PUT)
-            {
-                connection.setDoOutput(true);
-                connection.setUseCaches(false);
-                if(requestData != null && requestData.length() > 0)
-                {
-                    OutputStream out = connection.getOutputStream();
-                    out.write(requestData.getBytes(requestEncoding));
-                    out.flush();
-                    out.close();
-                }
-            }
-        }
-        return connection;
+        return URLEncoder.encode(object == null ? "" : object.toString(), encoding);
     }
 
     /**
-     * Prepare the request data with the given args in the form of x-www-form-urlencoded.
-     *
-     * @param args     [Nullable] A Map that contains some args/Empty.
-     * @param encoding [Nullable] Encoding for the request data.
-     *
-     * @return A String like "name1=value1&name2=value2"
-     *
-     * @throws UnsupportedEncodingException
+     * Prepare the request data which looks like 'name1=value1&name2=value2' with the given args and encoding.
      */
     private String createRequestData(Map<String, Object> args, String encoding) throws UnsupportedEncodingException
     {
@@ -358,17 +243,136 @@ public final class HttpClient
     }
 
     /**
-     * Get encoded string for the specified object using the specified encoding.
-     *
-     * @param object   The object.
-     * @param encoding The encoding name.
-     *
-     * @return Encoded string.
-     *
-     * @throws UnsupportedEncodingException
+     * Create an {@link URL} object depending on the given args.
      */
-    private String encode(Object object, String encoding) throws UnsupportedEncodingException
+    private URL createUrl(String urlString, RequestMethod requestMethod, String requestData) throws MalformedURLException
     {
-        return URLEncoder.encode(object == null ? "" : object.toString(), encoding);
+        URL url = null;
+        switch(requestMethod)
+        {
+            case GET:
+            case DELETE:
+                url = new URL(requestData != null && requestData.length() > 0 ? urlString + '?' + requestData : urlString);
+                break;
+            case POST:
+            case PUT:
+                url = new URL(urlString);
+                break;
+        }
+        return url;
+    }
+
+    /**
+     * Open and return the connection referred to the given url.
+     */
+    private HttpURLConnection createConnection(URL url) throws IOException
+    {
+        HttpURLConnection connection;
+        String protocol = url.getProtocol();
+        if(PROTOCOL_HTTP.equalsIgnoreCase(protocol))
+        {
+            connection = (HttpURLConnection)url.openConnection();
+        } else if(PROTOCOL_HTTPS.equalsIgnoreCase(protocol))
+        {
+            connection = (HttpsURLConnection)url.openConnection();
+        } else
+        {
+            throw new ProtocolException(String.format("Unsupported protocol '%s'!", protocol));
+        }
+        return connection;
+    }
+
+    /**
+     * Set the attributes of the prepared connection.
+     */
+    private void setConnectionAttributes(HttpURLConnection connection, String requestMethod, int timeoutConn, int timeoutRead, boolean ifDoOutput, boolean ifUseCaches) throws ProtocolException
+    {
+        connection.setRequestMethod(requestMethod);
+        connection.setConnectTimeout(timeoutConn > 0 ? timeoutConn : DEFAULT_TIMEOUT_CONN);
+        connection.setReadTimeout(timeoutRead > 0 ? timeoutRead : DEFAULT_TIMEOUT_READ);
+        connection.setDoInput(true);
+        connection.setDoOutput(ifDoOutput);
+        connection.setUseCaches(ifUseCaches);
+    }
+
+    /**
+     * Fill the specified request headers of the prepared connection.
+     */
+    private void fillRequestHeaders(HttpURLConnection connection, Map<String, String> setHeaders, Map<String, List<String>> addHeaders)
+    {
+        if(addHeaders != null)
+        {
+            for(Map.Entry<String, List<String>> entry : addHeaders.entrySet())
+            {
+                String key = entry.getKey();
+                List<String> values = entry.getValue();
+                for(String value : values)
+                {
+                    connection.addRequestProperty(key, value);
+                }
+            }
+        }
+        if(setHeaders != null)
+        {
+            for(Map.Entry<String, String> entry : setHeaders.entrySet())
+            {
+                connection.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Fill the request body with the given data.
+     */
+    private void fillRequestBody(String requestEncoding, HttpURLConnection connection, boolean bodyNeeded, String requestData) throws IOException
+    {
+        if(bodyNeeded)
+        {
+            if(requestData != null && requestData.length() > 0)
+            {
+                OutputStream out = connection.getOutputStream();
+                out.write(requestData.getBytes(requestEncoding));
+                out.flush();
+                out.close();
+            }
+        }
+    }
+
+    /**
+     * Read all info and data from the response.
+     */
+    private void readResponse(HttpURLConnection connection, Response response, URL url) throws IOException
+    {
+        response.setUrl(url);
+        response.setStatusCode(connection.getResponseCode());
+        response.setResponseMessage(connection.getResponseMessage());
+        response.setContentType(connection.getContentType());
+        response.setContentEncoding(connection.getContentEncoding());
+        response.setContentLength(connection.getContentLength());
+        response.setIfModifiedSince(connection.getIfModifiedSince());
+        response.setLastModified(connection.getLastModified());
+        response.setIfNoneMatch(connection.getHeaderField("If-None-Match"));
+        response.setETag(connection.getHeaderField("ETag"));
+        response.setDate(connection.getDate());
+        response.setExpires(connection.getExpiration());
+        response.setHeaders(connection.getHeaderFields());
+        InputStream inputStream = response.getStatusCode() == HttpURLConnection.HTTP_OK ? connection.getInputStream() : connection.getErrorStream();
+        if(inputStream != null)
+        {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len;
+            while((len = inputStream.read(buffer)) != -1)
+            {
+                outputStream.write(buffer, 0, len);
+            }
+            response.setContentBytes(outputStream.toByteArray());
+            if(response.getContentLength() < 0)
+            {
+                response.setContentLength(response.getContentBytes().length);
+            }
+            outputStream.close();
+            inputStream.close();
+        }
     }
 }
