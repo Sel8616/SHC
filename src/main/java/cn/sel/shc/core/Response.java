@@ -24,167 +24,232 @@ import java.util.Map;
 
 public class Response
 {
-    private URL URL;
-    private int StatusCode;
-    private String ContentType;
-    private String ContentEncoding;
-    private int ContentLength;
-    private byte[] ContentBytes;
-    private RequestError ErrorCode;
-    private Map<String, List<String>> Headers;
+    private URL url;
+    private int statusCode;
+    private String responseMessage;
+    private String contentType;
+    private String contentEncoding;
+    private int contentLength;
+    private long date;
+    private long expires;
+    private long ifModifiedSince;
+    private long lastModified;
+    private String ifNoneMatch;
+    private String ETag;
+    private RequestError requestError;
+    private byte[] contentBytes;
+    private Map<String, List<String>> headers;
 
-    public URL getURL()
+    public URL getUrl()
     {
-        return URL;
+        return url;
     }
 
-    void setURL(URL URL)
+    void setUrl(URL url)
     {
-        this.URL = URL;
+        this.url = url;
     }
 
     public int getStatusCode()
     {
-        return StatusCode;
+        return statusCode;
     }
 
     void setStatusCode(int statusCode)
     {
-        StatusCode = statusCode;
+        this.statusCode = statusCode;
+    }
+
+    void setResponseMessage(String responseMessage)
+    {
+        this.responseMessage = responseMessage;
+    }
+
+    public String getResponseMessage()
+    {
+        return responseMessage;
     }
 
     public String getContentType()
     {
-        return ContentType;
+        return contentType;
     }
 
     void setContentType(String contentType)
     {
-        ContentType = contentType;
+        this.contentType = contentType;
     }
 
     public String getContentEncoding()
     {
-        return ContentEncoding;
+        return contentEncoding;
     }
 
     void setContentEncoding(String contentEncoding)
     {
-        ContentEncoding = contentEncoding;
+        this.contentEncoding = contentEncoding;
     }
 
     public int getContentLength()
     {
-        return ContentLength;
+        return contentLength;
     }
 
     void setContentLength(int contentLength)
     {
-        ContentLength = contentLength;
+        this.contentLength = contentLength;
     }
 
     public byte[] getContentBytes()
     {
-        return ContentBytes;
+        return contentBytes;
     }
 
-    public void setContentBytes(byte[] contentBytes)
+    void setContentBytes(byte[] contentBytes)
     {
-        ContentBytes = contentBytes;
+        this.contentBytes = contentBytes;
     }
 
     public String getContentString()
     {
-        try
+        if(contentBytes != null && contentBytes.length > 0)
         {
-            if(ContentEncoding != null && ContentEncoding.length() > 0)
+            if(contentEncoding != null && contentEncoding.length() > 0)
             {
-                return new String(ContentBytes, ContentEncoding);
+                try
+                {
+                    return new String(contentBytes, contentEncoding);
+                } catch(UnsupportedEncodingException e)
+                {
+                    e.printStackTrace();
+                }
+            } else
+            {
+                return new String(contentBytes);
             }
-        } catch(UnsupportedEncodingException e)
-        {
-            e.printStackTrace();
         }
-        return new String(ContentBytes);
+        return null;
     }
 
     public String getContentString(String encoding) throws UnsupportedEncodingException
     {
-        return encoding != null && encoding.length() > 0 ? new String(ContentBytes, encoding) : getContentString();
+        return encoding != null && encoding.length() > 0 ? new String(contentBytes, encoding) : getContentString();
     }
 
-    public RequestError getErrorCode()
+    public RequestError getRequestError()
     {
-        return ErrorCode;
+        return requestError;
     }
 
-    void setErrorCode(RequestError errorCode)
+    void setRequestError(RequestError requestError)
     {
-        ErrorCode = errorCode;
+        this.requestError = requestError;
+    }
+
+    public long getIfModifiedSince()
+    {
+        return ifModifiedSince;
+    }
+
+    void setIfModifiedSince(long ifModifiedSince)
+    {
+        this.ifModifiedSince = ifModifiedSince;
+    }
+
+    public long getLastModified()
+    {
+        return lastModified;
+    }
+
+    void setLastModified(long lastModified)
+    {
+        this.lastModified = lastModified;
+    }
+
+    public String getIfNoneMatch()
+    {
+        return ifNoneMatch;
+    }
+
+    void setIfNoneMatch(String ifNoneMatch)
+    {
+        this.ifNoneMatch = ifNoneMatch;
+    }
+
+    public String getETag()
+    {
+        return ETag;
+    }
+
+    void setETag(String ETag)
+    {
+        this.ETag = ETag;
+    }
+
+    public long getDate()
+    {
+        return date;
+    }
+
+    void setDate(long date)
+    {
+        this.date = date;
+    }
+
+    public long getExpires()
+    {
+        return expires;
+    }
+
+    void setExpires(long expires)
+    {
+        this.expires = expires;
     }
 
     public String getHeader(String name)
     {
-        List<String> headers = getHeaders(name);
-        return headers == null || headers.size() == 0 ? null : headers.get(0);
+        List<String> headerList = getHeaders(name);
+        return headerList == null || headerList.size() == 0 ? null : headerList.get(0);
     }
 
     public List<String> getHeaders(String name)
     {
-        return Headers.get(name);
+        return headers.get(name);
     }
 
     public Map<String, List<String>> getHeaders()
     {
-        return Headers;
+        return headers;
     }
 
     void setHeaders(Map<String, List<String>> headerFields)
     {
-        Headers = headerFields;
+        headers = headerFields;
     }
 
-    private String getHeadersString()
+    public String getHeadersString()
     {
-        if(Headers != null)
-        {
-            String result = "";
-            for(Map.Entry<String, List<String>> entry : Headers.entrySet())
-            {
-                String string = "[";
-                List<String> values = entry.getValue();
-                for(String v : values)
-                {
-                    string += v + ',';
-                }
-                if(values.size() > 0)
-                {
-                    string = string.substring(0, string.lastIndexOf(','));
-                }
-                string += "]";
-                result += String.format("%s:%s,", entry.getKey(), string);
-            }
-            if(Headers.size() > 0)
-            {
-                result = result.substring(0, result.lastIndexOf(','));
-            }
-            return '[' + result + ']';
-        }
-        return null;
+        return String.valueOf(headers);
     }
 
     @Override
     public String toString()
     {
         return "Response{" +
-                "URL=" + URL +
-                ", StatusCode=" + StatusCode +
-                ", ContentType='" + ContentType + '\'' +
-                ", ContentEncoding='" + ContentEncoding + '\'' +
-                ", ContentLength=" + ContentLength +
-                ", Content='" + getContentString() + '\'' +
-                ", ErrorCode=" + ErrorCode +
-                ", Headers=" + getHeadersString() +
+                "url=" + url +
+                ", statusCode=" + statusCode +
+                ", responseMessage='" + responseMessage + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", contentEncoding='" + contentEncoding + '\'' +
+                ", contentLength=" + contentLength +
+                ", date=" + date +
+                ", expires=" + expires +
+                ", ifModifiedSince=" + ifModifiedSince +
+                ", lastModified=" + lastModified +
+                ", ifNoneMatch='" + ifNoneMatch + '\'' +
+                ", ETag='" + ETag + '\'' +
+                ", requestError=" + requestError +
+                ", headers=" + headers +
                 '}';
     }
 }

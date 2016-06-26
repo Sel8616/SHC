@@ -15,10 +15,9 @@
  */
 package cn.sel.shc.constant;
 
-public enum RequestMethod
+public enum RequestStatus
 {
-    GET,
-    POST,
-    PUT,
-    DELETE
+    INITIALIZING,
+    WAITING,
+    HANDLING
 }

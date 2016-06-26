@@ -17,7 +17,6 @@ package cn.sel.shc.core;
 
 import cn.sel.shc.constant.RequestError;
 import cn.sel.shc.constant.RequestMethod;
-import cn.sel.shc.constant.StandardEncoding;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -34,46 +33,27 @@ import java.util.concurrent.Executors;
  */
 public final class HttpClient
 {
-    //region Constants--------------------------------------------------------------------------------------------------
     /**
-     * HTTP protocol name
+     * Singleton instance holder
      */
-    private static final String PROTOCOL_HTTP = "HTTP";
-    /**
-     * HTTPS protocol name
-     */
-    private static final String PROTOCOL_HTTPS = "HTTPS";
-    /**
-     * Default Connection Timeout(ms)
-     */
-    private static final int DEFAULT_TIMEOUT_CONN = 5000;
-    /**
-     * Default Read Timeout(ms)
-     */
-    private static final int DEFAULT_TIMEOUT_READ = 10000;
-    //endregion Constants-----------------------------------------------------------------------------------------------
-    //region Properties-------------------------------------------------------------------------------------------------
-    /**
-     * Thread pool
-     */
-    private static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
-    /**
-     * Request will be encoded with this unless the 'requestEncoding' parameter was specified.
-     * It will be initialized as {@link StandardEncoding#UTF_8}
-     */
-    private static final String DEFAULT_REQUEST_ENCODING = Charset.defaultCharset().name();
-    //endregion Properties----------------------------------------------------------------------------------------------
-    //region Constructors & Initialization------------------------------------------------------------------------------
+    private static class SingletonHolder
+    {
+        private static final HttpClient INSTANCE = new HttpClient();
+    }
 
-    /**
-     * Prevent instantiation by other class
-     */
+    private static final String PROTOCOL_HTTP = "HTTP";
+    private static final String PROTOCOL_HTTPS = "HTTPS";
+    private static final int DEFAULT_TIMEOUT_CONN = 5000;
+    private static final int DEFAULT_TIMEOUT_READ = 10000;
+    private static final String DEFAULT_REQUEST_ENCODING = Charset.defaultCharset().name();
+    private final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
+
     private HttpClient()
     {
     }
 
     /**
-     * Get the singleton instance, and init properties with default values.
+     * Get the singleton instance.
      *
      * @return {@link SingletonHolder#INSTANCE}
      */
@@ -81,181 +61,167 @@ public final class HttpClient
     {
         return SingletonHolder.INSTANCE;
     }
-    //endregion Constructors & Initialization---------------------------------------------------------------------------
-    //region Methods----------------------------------------------------------------------------------------------------
 
     /**
      * Create a holder to cache custom headers and connection attributes.
      *
      * @return {@link RequestHolder}
      */
-    public final RequestHolder prepare()
+    public RequestHolder prepare()
     {
         return new RequestHolder();
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void get(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
+    public void get(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.GET, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.GET, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void get(int requestId, String urlString, ResponseHandler responseHandler)
+    public void get(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, null, RequestMethod.GET, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.GET, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void post(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
+    public void post(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.POST, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void post(int requestId, String urlString, ResponseHandler responseHandler)
+    public void post(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, null, RequestMethod.POST, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.POST, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void put(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
+    public void put(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.PUT, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.PUT, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void put(int requestId, String urlString, ResponseHandler responseHandler)
+    public void put(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, null, RequestMethod.PUT, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.PUT, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void delete(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
+    public void delete(int requestId, String url, Map<String, Object> parameters, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.DELETE, parameters, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @see #sendHttpRequest(int, String, RequestMethod, Map, ResponseHandler, String, Map, Map, int, int)
      */
-    public final void delete(int requestId, String urlString, ResponseHandler responseHandler)
+    public void delete(int requestId, String url, ResponseHandler handler)
     {
-        sendHttpRequest(requestId, urlString, null, RequestMethod.DELETE, DEFAULT_REQUEST_ENCODING, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, null, null, responseHandler);
+        sendHttpRequest(requestId, url, RequestMethod.DELETE, null, handler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ);
     }
 
     /**
      * Send the HTTP request
      *
-     * @param requestId       Registered in {@link ResponseHandler}
-     * @param urlString       [Nullable] The string of the host urlString.
-     * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-     * @param requestMethod   [Nullable] {@link RequestMethod}
-     * @param requestEncoding [Nullable] Encoding for the request's parameters.
-     * @param setHeaders      [Nullable] A Map that contains some http headers which should be set to the request.
-     * @param addHeaders      [Nullable] A Map that contains some http headers which should be added to the request.
-     * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
+     * @param requestId   An integer value to identify the request.
+     * @param url         [NonNull] The string of the host url.
+     * @param method      [NonNull] {@link RequestMethod}
+     * @param parameters  [Nullable] A Map that contains some parameters.
+     * @param handler     [NonNull] Implementation of {@link ResponseHandler}
+     * @param encoding    [Nullable] Encoding for the request's parameters.
+     * @param setHeaders  [Nullable] A Map that contains some http headers which should be set to the request.
+     * @param addHeaders  [Nullable] A Map that contains some http headers which should be added to the request.
+     * @param timeoutConn Connection timeout(ms)
+     * @param timeoutRead Data timeout(ms)
      */
-    void sendHttpRequest(int requestId, String urlString, Map<String, Object> parameters, RequestMethod requestMethod, String requestEncoding, int timeoutConn, int timeoutRead, Map<String, String> setHeaders, Map<String, List<String>> addHeaders, ResponseHandler responseHandler)
+    void sendHttpRequest(int requestId, String url, RequestMethod method, Map<String, Object> parameters, ResponseHandler handler, String encoding, Map<String, String> setHeaders, Map<String, List<String>> addHeaders, int timeoutConn, int timeoutRead)
     {
-        Objects.requireNonNull(responseHandler);
+        Objects.requireNonNull(handler);
         THREAD_POOL.submit(()->{
-            responseHandler.registerRequest(requestId);
+            HttpURLConnection connection = null;
             Response response = new Response();
+            response.setStatusCode(0);
             try
             {
-                HttpURLConnection connection = initConnection(urlString, requestMethod, parameters, requestEncoding, timeoutConn, timeoutRead, setHeaders, addHeaders);
+                response.setUrl(new URL(url));
+                connection = initConnection(url, method, parameters, encoding, timeoutConn, timeoutRead, setHeaders, addHeaders);
                 if(connection != null)
                 {
                     connection.connect();
-                    response.setURL(connection.getURL());
+                    response.setUrl(connection.getURL());
                     response.setStatusCode(connection.getResponseCode());
+                    response.setResponseMessage(connection.getResponseMessage());
                     response.setContentType(connection.getContentType());
                     response.setContentEncoding(connection.getContentEncoding());
+                    response.setContentLength(connection.getContentLength());
+                    response.setIfModifiedSince(connection.getIfModifiedSince());
+                    response.setLastModified(connection.getLastModified());
+                    response.setIfNoneMatch(connection.getHeaderField("If-None-Match"));
+                    response.setETag(connection.getHeaderField("ETag"));
+                    response.setDate(connection.getDate());
+                    response.setExpires(connection.getExpiration());
                     response.setHeaders(connection.getHeaderFields());
-                    InputStream inputStream;
-                    inputStream = response.getStatusCode() == HttpURLConnection.HTTP_OK ? connection.getInputStream() : connection.getErrorStream();
+                    InputStream inputStream = response.getStatusCode() == HttpURLConnection.HTTP_OK ? connection.getInputStream() : connection.getErrorStream();
                     if(inputStream != null)
-                    {//When it actually received something, read them.
+                    {
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                         byte[] buffer = new byte[1024];
                         int len;
                         while((len = inputStream.read(buffer)) != -1)
                         {
-                            response.setContentLength(response.getContentLength() + len);
                             outputStream.write(buffer, 0, len);
                         }
                         response.setContentBytes(outputStream.toByteArray());
-                        inputStream.close();
+                        if(response.getContentLength() < 0)
+                        {
+                            response.setContentLength(response.getContentBytes().length);
+                        }
                         outputStream.close();
+                        inputStream.close();
                     }
                 } else
                 {
-                    response.setURL(new URL(urlString));
-                    response.setStatusCode(0);
-                    response.setErrorCode(RequestError.INTERNAL);
+                    response.setRequestError(RequestError.INTERNAL);
                 }
-            } catch(NoSuchElementException e)
-            {
-                response.setErrorCode(RequestError.INVALID_CONTENT_TYPE);
-                e.printStackTrace();
             } catch(UnsupportedEncodingException e)
             {
-                response.setErrorCode(RequestError.INVALID_ENCODING);
-                e.printStackTrace();
-            } catch(ProtocolException e)
-            {
-                response.setErrorCode(RequestError.NETWORK);
+                response.setRequestError(RequestError.INVALID_ENCODING);
                 e.printStackTrace();
             } catch(MalformedURLException e)
             {
-                response.setErrorCode(RequestError.INVALID_URL);
+                response.setRequestError(RequestError.INVALID_URL);
                 e.printStackTrace();
             } catch(IOException e)
             {
-                response.setErrorCode(RequestError.NETWORK);
+                response.setRequestError(RequestError.NETWORK);
                 e.printStackTrace();
             } catch(Exception e)
             {
-                response.setErrorCode(RequestError.UNKNOWN);
+                response.setRequestError(RequestError.UNKNOWN);
                 e.printStackTrace();
             } finally
             {
-                responseHandler.handleResponse(requestId, response);
+                handler.handleResponse(requestId, response);
+                if(connection != null)
+                {
+                    connection.disconnect();
+                }
             }
         });
     }
@@ -265,10 +231,10 @@ public final class HttpClient
      *
      * @param urlString       [NonNull] String form of host urlString. A full expression is expected!
      * @param requestMethod   [NonNull] {@link RequestMethod}
-     * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-     * @param requestEncoding [Nullable] Encoding for the request's parameters.
-     * @param timeoutConn     Connection Timeout(ms)
-     * @param timeoutRead     Data Timeout(ms)
+     * @param parameters      [Nullable] A Map that contains some parameters.
+     * @param requestEncoding [Nullable] Encoding for the request data.
+     * @param timeoutConn     Connection timeout(ms)
+     * @param timeoutRead     Data timeout(ms)
      * @param setHeaders      [Nullable] A Map that contains some http headers which should be set to the request.
      * @param addHeaders      [Nullable] A Map that contains some http headers which should be added to the request.
      *
@@ -279,8 +245,7 @@ public final class HttpClient
      * @throws UnsupportedEncodingException
      * @throws MalformedURLException
      */
-    private HttpURLConnection initConnection(String urlString, RequestMethod requestMethod, Map<String, Object> parameters, String requestEncoding, int timeoutConn, int timeoutRead, Map<String, String> setHeaders, Map<String, List<String>> addHeaders)
-            throws IOException, UnsupportedEncodingException, MalformedURLException, ProtocolException
+    private HttpURLConnection initConnection(String urlString, RequestMethod requestMethod, Map<String, Object> parameters, String requestEncoding, int timeoutConn, int timeoutRead, Map<String, String> setHeaders, Map<String, List<String>> addHeaders) throws IOException, UnsupportedEncodingException, MalformedURLException, ProtocolException
     {
         Objects.requireNonNull(urlString);
         Objects.requireNonNull(requestMethod);
@@ -335,7 +300,7 @@ public final class HttpClient
                 connection.setDoOutput(true);
                 connection.setUseCaches(false);
                 if(requestData != null && requestData.length() > 0)
-                {//Fill request body
+                {
                     OutputStream out = connection.getOutputStream();
                     out.write(requestData.getBytes(requestEncoding));
                     out.flush();
@@ -347,45 +312,43 @@ public final class HttpClient
     }
 
     /**
-     * Prepare the request data with the given parameters in the form of x-www-form-urlencoded.
+     * Prepare the request data with the given args in the form of x-www-form-urlencoded.
      *
-     * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-     * @param requestEncoding [Nullable] Encoding for the request's parameters.
+     * @param args     [Nullable] A Map that contains some args/Empty.
+     * @param encoding [Nullable] Encoding for the request data.
      *
      * @return A String like "name1=value1&name2=value2"
      *
      * @throws UnsupportedEncodingException
      */
-    private String createRequestData(Map<String, Object> parameters, String requestEncoding)
-            throws UnsupportedEncodingException
+    private String createRequestData(Map<String, Object> args, String encoding) throws UnsupportedEncodingException
     {
-        if(parameters != null)
+        if(args != null)
         {
-            int size = parameters.size();
+            int size = args.size();
             if(size > 0)
             {
-                //Specific the capacity based on speculation for better performance.
                 StringBuilder stringBuilder = new StringBuilder(size * 10);
-                if(requestEncoding == null || requestEncoding.length() == 0)
+                if(encoding == null || encoding.length() == 0)
                 {
-                    requestEncoding = Charset.defaultCharset().name();
+                    encoding = Charset.defaultCharset().name();
                 }
-                Iterator<Map.Entry<String, Object>> iterator = parameters.entrySet().iterator();
-                Map.Entry<String, Object> next = iterator.next();
-                String key = next.getKey();
-                Object value = next.getValue();
+                Iterator<Map.Entry<String, Object>> iterator = args.entrySet().iterator();
+                Map.Entry<String, Object> arg = iterator.next();
+                String key = arg.getKey();
+                Object value = arg.getValue();
                 if(key != null && key.length() > 0)
                 {
-                    stringBuilder.append(next.getKey()).append('=').append(URLEncoder.encode(paramFilter(value), requestEncoding));
+                    stringBuilder.append(key).append('=').append(encode(value, encoding));
                 }
                 while(iterator.hasNext())
                 {
-                    next = iterator.next();
-                    key = next.getKey();
-                    value = next.getValue();
+                    arg = iterator.next();
+                    key = arg.getKey();
+                    value = arg.getValue();
                     if(key != null && key.length() > 0)
                     {
-                        stringBuilder.append('&').append(key).append('=').append(URLEncoder.encode(paramFilter(value), requestEncoding));
+                        stringBuilder.append('&').append(key).append('=').append(encode(value, encoding));
                     }
                 }
                 return stringBuilder.toString();
@@ -395,212 +358,17 @@ public final class HttpClient
     }
 
     /**
-     * Replace null with "".
+     * Get encoded string for the specified object using the specified encoding.
      *
-     * @param object Uncertain object.
+     * @param object   The object.
+     * @param encoding The encoding name.
      *
-     * @return String
+     * @return Encoded string.
+     *
+     * @throws UnsupportedEncodingException
      */
-    private String paramFilter(Object object)
+    private String encode(Object object, String encoding) throws UnsupportedEncodingException
     {
-        return object == null ? "" : object.toString();
+        return URLEncoder.encode(object == null ? "" : object.toString(), encoding);
     }
-    //endregion Methods-------------------------------------------------------------------------------------------------
-    //region Inner classes----------------------------------------------------------------------------------------------
-
-    /**
-     * Singleton instance holder
-     */
-    private static class SingletonHolder
-    {
-        private static final HttpClient INSTANCE = new HttpClient();
-    }
-
-    /**
-     * Hold attributes for a new request which is going to be send out but still has other attributes to add.
-     */
-    public static class RequestHolder
-    {
-        /**
-         * To encode the request parameters.
-         */
-        private String REQUEST_ENCODING;
-        /**
-         * Connection Timeout(ms)
-         */
-        private int TIMEOUT_CONN = 0;
-        /**
-         * Data Timeout(ms)
-         */
-        private int TIMEOUT_READ = 0;
-        /**
-         * Custom headers to set
-         */
-        private final Map<String, String> SET_HEADERS = new HashMap<>();
-        /**
-         * Custom headers to add
-         */
-        private final Map<String, List<String>> ADD_HEADERS = new HashMap<>();
-
-        /**
-         * @param requestEncoding Value of {@link #REQUEST_ENCODING}
-         *
-         * @return this
-         */
-        public final RequestHolder setRequestEncoding(String requestEncoding)
-        {
-            REQUEST_ENCODING = requestEncoding;
-            return this;
-        }
-
-        /**
-         * @param connTimeout Value of {@link #TIMEOUT_CONN}
-         *
-         * @return this
-         */
-        public final RequestHolder setConnTimeout(int connTimeout)
-        {
-            TIMEOUT_CONN = connTimeout;
-            return this;
-        }
-
-        /**
-         * @param readTimeout Value of {@link #TIMEOUT_READ}
-         *
-         * @return this
-         */
-        public final RequestHolder setReadTimeout(int readTimeout)
-        {
-            TIMEOUT_READ = readTimeout;
-            return this;
-        }
-
-        /**
-         * Reset the specific header with new value.
-         *
-         * @param name  Header name
-         * @param value Header value
-         *
-         * @return this
-         */
-        public final RequestHolder setHeader(String name, String value)
-        {
-            if(name != null && name.length() > 0 && value != null)
-            {
-                SET_HEADERS.put(name, value);
-            }
-            return this;
-        }
-
-        /**
-         * Add new value to the specific header
-         *
-         * @param name  Header name
-         * @param value Header value
-         *
-         * @return this
-         */
-        public final RequestHolder addHeader(String name, String value)
-        {
-            if(name != null && name.length() > 0 && value != null)
-            {
-                List<String> values = ADD_HEADERS.get(name);
-                if(values != null)
-                {
-                    values.add(value);
-                } else
-                {
-                    values = new ArrayList<>(1);
-                    values.add(value);
-                    ADD_HEADERS.put(name, values);
-                }
-            }
-            return this;
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void get(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.GET, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void get(int requestId, String urlString, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.GET, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void post(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.POST, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void post(int requestId, String urlString, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.POST, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void put(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.PUT, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void put(int requestId, String urlString, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.PUT, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param parameters      [Nullable] A Map that contains some parameters/Empty.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void delete(int requestId, String urlString, Map<String, Object> parameters, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, parameters, RequestMethod.DELETE, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-
-        /**
-         * @param requestId       Registered in {@link ResponseHandler}
-         * @param urlString       [Nullable] The string of the host urlString.
-         * @param responseHandler [NonNull] Implementation of {@link ResponseHandler}
-         */
-        public final void delete(int requestId, String urlString, ResponseHandler responseHandler)
-        {
-            getInstance().sendHttpRequest(requestId, urlString, null, RequestMethod.DELETE, REQUEST_ENCODING, TIMEOUT_CONN, TIMEOUT_READ, SET_HEADERS, ADD_HEADERS, responseHandler);
-        }
-    }
-    //endregion---------------------------------------------------------------------------------------------------------
 }

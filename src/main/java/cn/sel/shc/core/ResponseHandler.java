@@ -18,8 +18,6 @@ package cn.sel.shc.core;
 import cn.sel.shc.constant.RequestError;
 
 import java.net.HttpURLConnection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Handle the responses received by {@link HttpClient}<br/>
@@ -31,14 +29,10 @@ import java.util.Set;
 public abstract class ResponseHandler
 {
     /**
-     * RequestIds
-     */
-    private final Set<Integer> REQUEST_SET = new HashSet<>();
-
-    /**
      * The request was finished(success/fail/error), and one of the other 3 abstract methods will be invoked according to the status code if 'false' was returned.
      *
-     * @param requestId requestId
+     * @param requestId An integer value to identify the request.
+     * @param response  response
      *
      * @return <li>true</li>The response has been handled in this method.<li>false</li>Not handled yet.
      */
@@ -47,26 +41,26 @@ public abstract class ResponseHandler
     /**
      * The server returned 200 and given an expected result.
      *
-     * @param requestId requestId
-     * @param response  response
+     * @param requestId An integer value to identify the request.
+     * @param response  The response.
      */
     protected abstract void onSuccess(int requestId, Response response);
 
     /**
      * The server had received the request,but refused to work and returned a non-200 status code.
      *
-     * @param requestId  requestId
-     * @param statusCode statusCode
+     * @param requestId An integer value to identify the request.
+     * @param response  The response.
      */
-    protected abstract void onFailure(int requestId, int statusCode);
+    protected abstract void onFailure(int requestId, Response response);
 
     /**
      * The request hasn't been sent out.
      *
-     * @param requestId requestId
-     * @param errorCode errorCode
+     * @param requestId    An integer value to identify the request.
+     * @param requestError requestError
      */
-    protected abstract void onError(int requestId, RequestError errorCode);
+    protected abstract void onError(int requestId, RequestError requestError);
 
     /**
      * @param requestId See {@link HttpClient}
@@ -77,55 +71,22 @@ public abstract class ResponseHandler
         if(response != null)
         {
             int statusCode = response.getStatusCode();
-            RequestError errorCode = response.getErrorCode();
-            if(REQUEST_SET.contains(requestId))
-            {//This request which is still in the sequence will be handled. In other case, it should be ignored.
-                REQUEST_SET.remove(requestId);
-                if(!onFinished(requestId, response))
+            RequestError errorCode = response.getRequestError();
+            if(!onFinished(requestId, response))
+            {
+                switch(statusCode)
                 {
-                    switch(statusCode)
-                    {
-                        case 0:
-                            onError(requestId, errorCode);
-                            break;
-                        case HttpURLConnection.HTTP_OK://200
-                            onSuccess(requestId, response);
-                            break;
-                        default:
-                            onFailure(requestId, response.getStatusCode());
-                            break;
-                    }
+                    case 0:
+                        onError(requestId, errorCode);
+                        break;
+                    case HttpURLConnection.HTTP_OK://200
+                        onSuccess(requestId, response);
+                        break;
+                    default:
+                        onFailure(requestId, response);
+                        break;
                 }
             }
-        }
-    }
-
-    /**
-     * Tell the ResponseHandler that a new request tagged with 'requestId' is about to be send out.
-     *
-     * @param requestId Only {@link HttpClient} can invoke this method.
-     */
-    void registerRequest(int requestId)
-    {
-        REQUEST_SET.add(requestId);
-    }
-
-    /**
-     * Try to cancel a pending request.
-     *
-     * @param requestId requestId
-     *
-     * @return True: Succeeded to cancel; False: Already returned.
-     */
-    public boolean cancelTask(int requestId)
-    {
-        if(REQUEST_SET.contains(requestId))
-        {
-            REQUEST_SET.remove(requestId);
-            return true;
-        } else
-        {
-            return false;
         }
     }
 }

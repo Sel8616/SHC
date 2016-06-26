@@ -17,55 +17,54 @@
 import cn.sel.shc.constant.RequestError;
 import cn.sel.shc.constant.StandardEncoding;
 import cn.sel.shc.core.HttpClient;
+import cn.sel.shc.core.RequestHolder;
 import cn.sel.shc.core.Response;
 import cn.sel.shc.core.ResponseHandler;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class test
 {
+    private static final Logger logger = Logger.getGlobal();
     private static final ResponseHandler RESPONSE_HANDLER = new ResponseHandler()
     {
         @Override
         public boolean onFinished(int requestId, Response response)
         {
-            System.out.println("Request(" + requestId + ") finished.");
+            logger.info(String.format("Request(%d) finished.\n%s\n%s", requestId, response, response.getContentString()));
             return false;
         }
 
         @Override
         public void onSuccess(int requestId, Response response)
         {
-            System.out.println("Request(" + requestId + ") succeeded.");
-            System.out.println("Result:Success\tResponse:" + response);
+            logger.info(String.format("Request(%d)\tResult:Success", requestId));
         }
 
         @Override
-        public void onFailure(int requestId, int statusCode)
+        public void onFailure(int requestId, Response response)
         {
-            System.out.println("Request(" + requestId + ") failed.");
-            System.out.println("Result:Failure" + "\tStatusCode:" + statusCode);
+            logger.info(String.format("Request(%d)\tResult:Failure", requestId));
         }
 
         @Override
-        protected void onError(int requestId, RequestError errorCode)
+        protected void onError(int requestId, RequestError requestError)
         {
-            System.out.println("Request(" + requestId + ") error.");
-            System.out.println("Result:Error" + "\tErrorCode:" + errorCode);
+            logger.info(String.format("Request(%d)\tResult:Error(%s)", requestId, requestError));
         }
     };
 
-    public static void main(String[] args) throws UnsupportedEncodingException
+    public static void main(String[] args)
     {
         Map<String, Object> params = new HashMap<>();
         params.put("param1", "value1");
         params.put("param2", "value2");
         params.put("param3", "呵呵");
-        HttpClient.RequestHolder requestHolder = HttpClient.getInstance().prepare();
+        RequestHolder requestHolder = HttpClient.getInstance().prepare();
         requestHolder.setHeader("TOKEN", "TOKEN_STRING");
         requestHolder.setRequestEncoding(StandardEncoding.UTF_8);
-        requestHolder.post(0, "http://localhost:8080", params, RESPONSE_HANDLER);
+        requestHolder.get(0, "http://127.0.0.1:8080", params, RESPONSE_HANDLER);
     }
 }
