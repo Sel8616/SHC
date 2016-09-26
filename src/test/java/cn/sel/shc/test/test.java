@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package cn.sel.shc.test;
 
-import cn.sel.shc.constant.StandardEncoding;
 import cn.sel.shc.core.HttpClient;
+import cn.sel.shc.core.HttpResponse;
 import cn.sel.shc.core.RequestHolder;
-import cn.sel.shc.core.Response;
 import cn.sel.shc.core.ResponseHandler;
 
 import java.util.HashMap;
@@ -30,20 +30,20 @@ public class test
     private static final ResponseHandler RESPONSE_HANDLER = new ResponseHandler()
     {
         @Override
-        public boolean onFinished(int requestId, Response response)
+        public boolean onFinished(int requestId, HttpResponse httpResponse)
         {
-            logger.info(String.format("Request(%d) finished.\n%s\n%s", requestId, response, response.getContentString()));
+            logger.info(String.format("Request(%d) finished.\n%s\n%s", requestId, httpResponse, httpResponse.getContentString()));
             return false;
         }
 
         @Override
-        public void onSuccess(int requestId, Response response)
+        public void onSuccess(int requestId, HttpResponse httpResponse)
         {
             logger.info(String.format("Request(%d)\tResult:Success", requestId));
         }
 
         @Override
-        public void onFailure(int requestId, Response response)
+        public void onFailure(int requestId, HttpResponse httpResponse)
         {
             logger.info(String.format("Request(%d)\tResult:Failure", requestId));
         }
@@ -58,12 +58,9 @@ public class test
     public static void main(String[] args)
     {
         Map<String, Object> params = new HashMap<>();
-        params.put("param1", "value1");
-        params.put("param2", "value2");
-        params.put("param3", "呵呵");
+        params.put("param1", "abc");
+        params.put("param2", 123);
         RequestHolder requestHolder = HttpClient.getInstance().prepare();
-        requestHolder.setHeader("TOKEN", "TOKEN_STRING");
-        requestHolder.setRequestEncoding(StandardEncoding.UTF_8);
-        requestHolder.get(0, "http://192.56.23.55", params, RESPONSE_HANDLER);
+        requestHolder.get(0, "http://localhost:8080", params, RESPONSE_HANDLER);
     }
 }

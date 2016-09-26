@@ -16,6 +16,8 @@
 package cn.sel.shc.core;
 
 import cn.sel.shc.constant.RequestMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -35,14 +37,7 @@ import java.util.concurrent.Executors;
  */
 public final class HttpClient
 {
-    /**
-     * Singleton instance holder
-     */
-    private static class SingletonHolder
-    {
-        private static final HttpClient INSTANCE = new HttpClient();
-    }
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpClient.class);
     private static final String PROTOCOL_HTTP = "HTTP";
     private static final String PROTOCOL_HTTPS = "HTTPS";
     private static final int DEFAULT_TIMEOUT_CONN = 5000;
@@ -159,27 +154,28 @@ public final class HttpClient
         Objects.requireNonNull(urlString);
         Objects.requireNonNull(requestMethod);
         Objects.requireNonNull(responseHandler);
-        THREAD_POOL.submit(()->{
+        THREAD_POOL.submit(()->
+        {
             HttpURLConnection connection = null;
-            Response response = new Response();
+            HttpResponse httpResponse = new HttpResponse();
             try
             {
-                boolean bodyNeeded = requestMethod == RequestMethod.POST || requestMethod == RequestMethod.PUT;
+                boolean isBodyNeeded = requestMethod == RequestMethod.POST || requestMethod == RequestMethod.PUT;
                 String requestData = createRequestData(parameters, requestEncoding);
                 URL url = createUrl(urlString, requestMethod, requestData);
                 connection = createConnection(url);
-                setConnectionAttributes(connection, requestMethod.name(), timeoutConn, timeoutRead, bodyNeeded, !bodyNeeded && ifUseCaches);
+                setConnectionAttributes(connection, requestMethod.name(), timeoutConn, timeoutRead, isBodyNeeded, !isBodyNeeded && ifUseCaches);
                 fillRequestHeaders(connection, setHeaders, addHeaders);
-                fillRequestBody(requestEncoding, connection, bodyNeeded, requestData);
+                fillRequestBody(connection, isBodyNeeded, requestData, requestEncoding);
                 connection.connect();
-                readResponse(connection, response, url);
+                readResponse(connection, httpResponse, url);
             } catch(Exception e)
             {
-                response.setContentBytes(e.getMessage().getBytes());
-                e.printStackTrace();
+                httpResponse.setContentBytes(e.getMessage().getBytes());
+                LOGGER.error(String.format("Request(%s) to (%s) failed!", requestMethod, urlString), e);
             } finally
             {
-                responseHandler.handleResponse(requestId, response);
+                responseHandler.handleResponse(requestId, httpResponse);
                 if(connection != null)
                 {
                     connection.disconnect();
@@ -198,7 +194,8 @@ public final class HttpClient
      *
      * @throws UnsupportedEncodingException
      */
-    private String encode(Object object, String encoding) throws UnsupportedEncodingException
+    private String encode(Object object, String encoding)
+            throws UnsupportedEncodingException
     {
         return URLEncoder.encode(object == null ? "" : object.toString(), encoding);
     }
@@ -206,7 +203,8 @@ public final class HttpClient
     /**
      * Prepare the request data which looks like 'name1=value1&name2=value2' with the given args and encoding.
      */
-    private String createRequestData(Map<String, Object> args, String encoding) throws UnsupportedEncodingException
+    private String createRequestData(Map<String, Object> args, String encoding)
+            throws UnsupportedEncodingException
     {
         if(args != null)
         {
@@ -214,7 +212,7 @@ public final class HttpClient
             if(size > 0)
             {
                 StringBuilder stringBuilder = new StringBuilder(size * 10);
-                if(encoding == null || encoding.length() == 0)
+                if(encoding == null || encoding.isEmpty())
                 {
                     encoding = Charset.defaultCharset().name();
                 }
@@ -222,7 +220,7 @@ public final class HttpClient
                 Map.Entry<String, Object> arg = iterator.next();
                 String key = arg.getKey();
                 Object value = arg.getValue();
-                if(key != null && key.length() > 0)
+                if(key != null && !key.isEmpty())
                 {
                     stringBuilder.append(key).append('=').append(encode(value, encoding));
                 }
@@ -231,7 +229,7 @@ public final class HttpClient
                     arg = iterator.next();
                     key = arg.getKey();
                     value = arg.getValue();
-                    if(key != null && key.length() > 0)
+                    if(key != null && !key.isEmpty())
                     {
                         stringBuilder.append('&').append(key).append('=').append(encode(value, encoding));
                     }
@@ -245,14 +243,15 @@ public final class HttpClient
     /**
      * Create an {@link URL} object depending on the given args.
      */
-    private URL createUrl(String urlString, RequestMethod requestMethod, String requestData) throws MalformedURLException
+    private URL createUrl(String urlString, RequestMethod requestMethod, String requestData)
+            throws MalformedURLException
     {
         URL url = null;
         switch(requestMethod)
         {
             case GET:
             case DELETE:
-                url = new URL(requestData != null && requestData.length() > 0 ? urlString + '?' + requestData : urlString);
+                url = new URL(requestData != null && !requestData.isEmpty() ? urlString + '?' + requestData : urlString);
                 break;
             case POST:
             case PUT:
@@ -265,7 +264,8 @@ public final class HttpClient
     /**
      * Open and return the connection referred to the given url.
      */
-    private HttpURLConnection createConnection(URL url) throws IOException
+    private HttpURLConnection createConnection(URL url)
+            throws IOException
     {
         HttpURLConnection connection;
         String protocol = url.getProtocol();
@@ -285,7 +285,8 @@ public final class HttpClient
     /**
      * Set the attributes of the prepared connection.
      */
-    private void setConnectionAttributes(HttpURLConnection connection, String requestMethod, int timeoutConn, int timeoutRead, boolean ifDoOutput, boolean ifUseCaches) throws ProtocolException
+    private void setConnectionAttributes(HttpURLConnection connection, String requestMethod, int timeoutConn, int timeoutRead, boolean ifDoOutput, boolean ifUseCaches)
+            throws ProtocolException
     {
         connection.setRequestMethod(requestMethod);
         connection.setConnectTimeout(timeoutConn > 0 ? timeoutConn : DEFAULT_TIMEOUT_CONN);
@@ -324,11 +325,12 @@ public final class HttpClient
     /**
      * Fill the request body with the given data.
      */
-    private void fillRequestBody(String requestEncoding, HttpURLConnection connection, boolean bodyNeeded, String requestData) throws IOException
+    private void fillRequestBody(HttpURLConnection connection, boolean bodyNeeded, String requestData, String requestEncoding)
+            throws IOException
     {
         if(bodyNeeded)
         {
-            if(requestData != null && requestData.length() > 0)
+            if(requestData != null && !requestData.isEmpty())
             {
                 OutputStream out = connection.getOutputStream();
                 out.write(requestData.getBytes(requestEncoding));
@@ -339,24 +341,25 @@ public final class HttpClient
     }
 
     /**
-     * Read all info and data from the response.
+     * Read all info and data from the httpResponse.
      */
-    private void readResponse(HttpURLConnection connection, Response response, URL url) throws IOException
+    private void readResponse(HttpURLConnection connection, HttpResponse httpResponse, URL url)
+            throws IOException
     {
-        response.setUrl(url);
-        response.setStatusCode(connection.getResponseCode());
-        response.setResponseMessage(connection.getResponseMessage());
-        response.setContentType(connection.getContentType());
-        response.setContentEncoding(connection.getContentEncoding());
-        response.setContentLength(connection.getContentLength());
-        response.setIfModifiedSince(connection.getIfModifiedSince());
-        response.setLastModified(connection.getLastModified());
-        response.setIfNoneMatch(connection.getHeaderField("If-None-Match"));
-        response.setETag(connection.getHeaderField("ETag"));
-        response.setDate(connection.getDate());
-        response.setExpires(connection.getExpiration());
-        response.setHeaders(connection.getHeaderFields());
-        InputStream inputStream = response.getStatusCode() == HttpURLConnection.HTTP_OK ? connection.getInputStream() : connection.getErrorStream();
+        httpResponse.setUrl(url);
+        httpResponse.setStatusCode(connection.getResponseCode());
+        httpResponse.setResponseMessage(connection.getResponseMessage());
+        httpResponse.setContentType(connection.getContentType());
+        httpResponse.setContentEncoding(connection.getContentEncoding());
+        httpResponse.setContentLength(connection.getContentLength());
+        httpResponse.setIfModifiedSince(connection.getIfModifiedSince());
+        httpResponse.setLastModified(connection.getLastModified());
+        httpResponse.setIfNoneMatch(connection.getHeaderField("If-None-Match"));
+        httpResponse.setETag(connection.getHeaderField("ETag"));
+        httpResponse.setDate(connection.getDate());
+        httpResponse.setExpires(connection.getExpiration());
+        httpResponse.setHeaders(connection.getHeaderFields());
+        InputStream inputStream = httpResponse.getStatusCode() == HttpURLConnection.HTTP_OK ? connection.getInputStream() : connection.getErrorStream();
         if(inputStream != null)
         {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -366,13 +369,21 @@ public final class HttpClient
             {
                 outputStream.write(buffer, 0, len);
             }
-            response.setContentBytes(outputStream.toByteArray());
-            if(response.getContentLength() < 0)
+            httpResponse.setContentBytes(outputStream.toByteArray());
+            if(httpResponse.getContentLength() < 0)
             {
-                response.setContentLength(response.getContentBytes().length);
+                httpResponse.setContentLength(httpResponse.getContentBytes().length);
             }
             outputStream.close();
             inputStream.close();
         }
+    }
+
+    /**
+     * Singleton instance holder
+     */
+    private static class SingletonHolder
+    {
+        private static final HttpClient INSTANCE = new HttpClient();
     }
 }
