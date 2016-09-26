@@ -19,7 +19,7 @@ import java.net.HttpURLConnection;
 
 /**
  * Handle the responses received by {@link HttpClient}<br/>
- * <li>1.One ResponseHandler can recognize different {@link Response}s by their 'requestId's.</li>
+ * <li>1.One ResponseHandler can recognize different {@link HttpResponse}s by their 'requestId's.</li>
  * <li>2.A request can be false canceled by calling 'cancelTask(int requestId)'. If the response hasn't arrived, it will be ignored.</li>
  *
  * @see HttpClient
@@ -29,28 +29,28 @@ public abstract class ResponseHandler
     /**
      * The request was finished(success/fail/error), and one of the other 3 abstract methods will be invoked according to the status code if 'false' was returned.
      *
-     * @param requestId An integer value to identify the request.
-     * @param response  response
+     * @param requestId    An integer value to identify the request.
+     * @param httpResponse httpResponse
      *
-     * @return <li>true: The response has been handled in this method.</li><li>false: Not handled yet.</li>
+     * @return <li>true: The httpResponse has been handled in this method.</li><li>false: Not handled yet.</li>
      */
-    protected abstract boolean onFinished(int requestId, Response response);
+    protected abstract boolean onFinished(int requestId, HttpResponse httpResponse);
 
     /**
      * The server returned 200 and given an expected result.
      *
-     * @param requestId An integer value to identify the request.
-     * @param response  The response.
+     * @param requestId    An integer value to identify the request.
+     * @param httpResponse The httpResponse.
      */
-    protected abstract void onSuccess(int requestId, Response response);
+    protected abstract void onSuccess(int requestId, HttpResponse httpResponse);
 
     /**
      * The server had received the request,but refused to work and returned a non-200 status code.
      *
-     * @param requestId An integer value to identify the request.
-     * @param response  The response.
+     * @param requestId    An integer value to identify the request.
+     * @param httpResponse The httpResponse.
      */
-    protected abstract void onFailure(int requestId, Response response);
+    protected abstract void onFailure(int requestId, HttpResponse httpResponse);
 
     /**
      * The request hasn't been sent out.
@@ -61,26 +61,26 @@ public abstract class ResponseHandler
     protected abstract void onError(int requestId, String error);
 
     /**
-     * @param requestId See {@link HttpClient}
-     * @param response  {@link Response}
+     * @param requestId    See {@link HttpClient}
+     * @param httpResponse {@link HttpResponse}
      */
-    void handleResponse(int requestId, Response response)
+    void handleResponse(int requestId, HttpResponse httpResponse)
     {
-        if(response != null)
+        if(httpResponse != null)
         {
-            int statusCode = response.getStatusCode();
-            if(!onFinished(requestId, response))
+            int statusCode = httpResponse.getStatusCode();
+            if(!onFinished(requestId, httpResponse))
             {
                 switch(statusCode)
                 {
                     case 0:
-                        onError(requestId, response.getContentString());
+                        onError(requestId, httpResponse.getContentString());
                         break;
-                    case HttpURLConnection.HTTP_OK://200
-                        onSuccess(requestId, response);
+                    case HttpURLConnection.HTTP_OK:
+                        onSuccess(requestId, httpResponse);
                         break;
                     default:
-                        onFailure(requestId, response);
+                        onFailure(requestId, httpResponse);
                         break;
                 }
             }

@@ -30,9 +30,9 @@ public class RequestHolder
     private final Map<String, String> HEADERS_SET = new HashMap<>();
     private final Map<String, List<String>> HEADERS_ADD = new HashMap<>();
     private String REQUEST_ENCODING;
-    private int TIMEOUT_CONN = 0;
-    private int TIMEOUT_READ = 0;
-    private boolean DEFAULT_USE_CACHES = false;
+    private int TIMEOUT_CONN;
+    private int TIMEOUT_READ;
+    private boolean DEFAULT_USE_CACHES;
 
     public RequestHolder setRequestEncoding(String encoding)
     {
@@ -60,7 +60,7 @@ public class RequestHolder
 
     public RequestHolder setHeader(String name, String value)
     {
-        if(name != null && name.length() > 0 && value != null)
+        if(name != null && !name.isEmpty() && value != null)
         {
             HEADERS_SET.put(name, value);
         }
@@ -69,7 +69,7 @@ public class RequestHolder
 
     public RequestHolder addHeader(String name, String value)
     {
-        if(name != null && name.length() > 0 && value != null)
+        if(name != null && !name.isEmpty() && value != null)
         {
             List<String> values = HEADERS_ADD.get(name);
             if(values != null)

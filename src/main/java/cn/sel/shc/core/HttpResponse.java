@@ -17,10 +17,11 @@ package cn.sel.shc.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class Response
+public class HttpResponse
 {
     private URL url;
     private int statusCode;
@@ -36,6 +37,27 @@ public class Response
     private String ETag;
     private byte[] contentBytes;
     private Map<String, List<String>> headers;
+
+    @Override
+    public String toString()
+    {
+        return "HttpResponse{" +
+                "url=" + url +
+                ", statusCode=" + statusCode +
+                ", responseMessage='" + responseMessage + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", contentEncoding='" + contentEncoding + '\'' +
+                ", contentLength=" + contentLength +
+                ", date=" + date +
+                ", expires=" + expires +
+                ", ifModifiedSince=" + ifModifiedSince +
+                ", lastModified=" + lastModified +
+                ", ifNoneMatch='" + ifNoneMatch + '\'' +
+                ", ETag='" + ETag + '\'' +
+                ", contentBytes=" + Arrays.toString(contentBytes) +
+                ", headers=" + headers +
+                '}';
+    }
 
     public URL getUrl()
     {
@@ -57,14 +79,14 @@ public class Response
         this.statusCode = statusCode;
     }
 
-    void setResponseMessage(String responseMessage)
-    {
-        this.responseMessage = responseMessage;
-    }
-
     public String getResponseMessage()
     {
         return responseMessage;
+    }
+
+    void setResponseMessage(String responseMessage)
+    {
+        this.responseMessage = responseMessage;
     }
 
     public String getContentType()
@@ -111,7 +133,7 @@ public class Response
     {
         if(contentBytes != null && contentBytes.length > 0)
         {
-            if(contentEncoding != null && contentEncoding.length() > 0)
+            if(contentEncoding != null && !contentEncoding.isEmpty())
             {
                 try
                 {
@@ -128,9 +150,10 @@ public class Response
         return null;
     }
 
-    public String getContentString(String encoding) throws UnsupportedEncodingException
+    public String getContentString(String encoding)
+            throws UnsupportedEncodingException
     {
-        return encoding != null && encoding.length() > 0 ? new String(contentBytes, encoding) : getContentString();
+        return encoding != null && !encoding.isEmpty() ? new String(contentBytes, encoding) : getContentString();
     }
 
     public long getIfModifiedSince()
@@ -196,7 +219,7 @@ public class Response
     public String getHeader(String name)
     {
         List<String> headerList = getHeaders(name);
-        return headerList == null || headerList.size() == 0 ? null : headerList.get(0);
+        return headerList == null || headerList.isEmpty() ? null : headerList.get(0);
     }
 
     public List<String> getHeaders(String name)
@@ -217,25 +240,5 @@ public class Response
     void setHeaders(Map<String, List<String>> headerFields)
     {
         headers = headerFields;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Response{" +
-                "url=" + url +
-                ", statusCode=" + statusCode +
-                ", responseMessage='" + responseMessage + '\'' +
-                ", contentType='" + contentType + '\'' +
-                ", contentEncoding='" + contentEncoding + '\'' +
-                ", contentLength=" + contentLength +
-                ", date=" + date +
-                ", expires=" + expires +
-                ", ifModifiedSince=" + ifModifiedSince +
-                ", lastModified=" + lastModified +
-                ", ifNoneMatch='" + ifNoneMatch + '\'' +
-                ", ETag='" + ETag + '\'' +
-                ", headers=" + headers +
-                '}';
     }
 }
