@@ -46,10 +46,6 @@ public final class HttpClient
     private static final String DEFAULT_REQUEST_ENCODING = Charset.defaultCharset().name();
     private final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
 
-    private HttpClient()
-    {
-    }
-
     /**
      * Get the singleton instance.
      *
@@ -58,6 +54,10 @@ public final class HttpClient
     public static HttpClient getInstance()
     {
         return SingletonHolder.INSTANCE;
+    }
+
+    private HttpClient()
+    {
     }
 
     /**
