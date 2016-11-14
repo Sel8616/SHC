@@ -13,54 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.sel.shc.test;
+package cn.sel.shc_test;
 
-import cn.sel.shc.core.HttpClient;
-import cn.sel.shc.core.HttpResponse;
-import cn.sel.shc.core.RequestHolder;
-import cn.sel.shc.core.ResponseHandler;
+import cn.sel.shc.main.HttpClient;
+import cn.sel.shc.main.HttpResponse;
+import cn.sel.shc.main.ResponseHandler;
+import cn.sel.shc.object.UploadData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
-public class test
+public class UploadDataClient
 {
-    private static final Logger logger = Logger.getGlobal();
+    private static final Logger LOGGER = LoggerFactory.getLogger("SHC_TEST_UPLOAD_CLIENT");
     private static final ResponseHandler RESPONSE_HANDLER = new ResponseHandler()
     {
         @Override
         public boolean onFinished(int requestId, HttpResponse httpResponse)
         {
-            logger.info(String.format("Request(%d) finished.\n%s\n%s", requestId, httpResponse, httpResponse.getContentString()));
+            LOGGER.info("Request({}) finished.\n{}\n{}", requestId, httpResponse, httpResponse.getContentString());
             return false;
         }
 
         @Override
         public void onSuccess(int requestId, HttpResponse httpResponse)
         {
-            logger.info(String.format("Request(%d)\tResult:Success", requestId));
+            LOGGER.info("Request({})\tResult: Success", requestId);
         }
 
         @Override
         public void onFailure(int requestId, HttpResponse httpResponse)
         {
-            logger.info(String.format("Request(%d)\tResult:Failure", requestId));
+            LOGGER.info("Request({})\tResult: Failure", requestId);
         }
 
         @Override
         protected void onError(int requestId, String error)
         {
-            logger.info(String.format("Request(%d)\tResult:Error(%s)", requestId, error));
+            LOGGER.info("Request({})\tResult: Error({})", requestId, error);
         }
     };
 
-    public static void main(String[] args)
+    public static void main(String... args)
     {
-        Map<String, Object> params = new HashMap<>();
-        params.put("param1", "abc");
-        params.put("param2", 123);
-        RequestHolder requestHolder = HttpClient.getInstance().prepare();
-        requestHolder.get(0, "http://localhost:8080", params, RESPONSE_HANDLER);
+        List<UploadData> dataList = new ArrayList<>();
+        dataList.add(new UploadData("uploadData1", "shc_upload_data1".getBytes()));
+        dataList.add(new UploadData("uploadData2", "shc_upload_data2".getBytes()));
+        HttpClient.getInstance().uploadDataList(11, "http://localhost:8008/upload", dataList, RESPONSE_HANDLER);
     }
 }

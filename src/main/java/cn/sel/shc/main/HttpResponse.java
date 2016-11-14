@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.sel.shc.core;
+package cn.sel.shc.main;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class HttpResponse
 {
-    private URL url;
+    private String url;
     private int statusCode;
     private String responseMessage;
     private String contentType;
@@ -59,12 +58,28 @@ public class HttpResponse
                 '}';
     }
 
-    public URL getUrl()
+    public void dispose()
+    {
+        url = null;
+        responseMessage = null;
+        contentType = null;
+        contentEncoding = null;
+        contentBytes = null;
+        ifNoneMatch = null;
+        ETag = null;
+        if(headers != null)
+        {
+            headers.clear();
+        }
+        headers = null;
+    }
+
+    public String getUrl()
     {
         return url;
     }
 
-    void setUrl(URL url)
+    void setUrl(String url)
     {
         this.url = url;
     }
