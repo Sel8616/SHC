@@ -16,7 +16,7 @@
 package cn.sel.shc.main;
 
 import cn.sel.shc.constant.RequestMethod;
-import cn.sel.shc.object.RequestArg;
+import cn.sel.shc.object.RequestArgs;
 import cn.sel.shc.object.UploadData;
 import cn.sel.shc.object.UploadFile;
 
@@ -35,9 +35,9 @@ public class RequestHolder implements Requester, Uploader
     private int TIMEOUT_READ;
 
     @Override
-    public void get(int requestId, String urlString, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void get(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, argList, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -47,9 +47,9 @@ public class RequestHolder implements Requester, Uploader
     }
 
     @Override
-    public void get(int requestId, String urlString, List<RequestArg> argList)
+    public void get(int requestId, String urlString, RequestArgs requestArgs)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, argList, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -59,9 +59,9 @@ public class RequestHolder implements Requester, Uploader
     }
 
     @Override
-    public void post(int requestId, String urlString, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void post(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, argList, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -71,9 +71,9 @@ public class RequestHolder implements Requester, Uploader
     }
 
     @Override
-    public void post(int requestId, String urlString, List<RequestArg> argList)
+    public void post(int requestId, String urlString, RequestArgs requestArgs)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, argList, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -83,9 +83,9 @@ public class RequestHolder implements Requester, Uploader
     }
 
     @Override
-    public void put(int requestId, String urlString, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void put(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, argList, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -95,9 +95,9 @@ public class RequestHolder implements Requester, Uploader
     }
 
     @Override
-    public void put(int requestId, String urlString, List<RequestArg> argList)
+    public void put(int requestId, String urlString, RequestArgs requestArgs)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, argList, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -107,9 +107,9 @@ public class RequestHolder implements Requester, Uploader
     }
 
     @Override
-    public void delete(int requestId, String urlString, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void delete(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, argList, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -119,9 +119,9 @@ public class RequestHolder implements Requester, Uploader
     }
 
     @Override
-    public void delete(int requestId, String urlString, List<RequestArg> argList)
+    public void delete(int requestId, String urlString, RequestArgs requestArgs)
     {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, argList, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
+        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override

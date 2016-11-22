@@ -17,7 +17,7 @@ package cn.sel.shc.main;
 
 import cn.sel.shc.constant.RequestContentType;
 import cn.sel.shc.constant.RequestMethod;
-import cn.sel.shc.object.RequestArg;
+import cn.sel.shc.object.RequestArgs;
 import cn.sel.shc.object.UploadData;
 import cn.sel.shc.object.UploadFile;
 import org.slf4j.Logger;
@@ -29,9 +29,11 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,9 +64,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void get(int requestId, String url, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void get(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.GET, argList, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.GET, requestArgs, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -74,9 +76,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void get(int requestId, String url, List<RequestArg> argList)
+    public void get(int requestId, String url, RequestArgs requestArgs)
     {
-        sendHttpRequest(requestId, url, RequestMethod.GET, argList, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.GET, requestArgs, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -86,9 +88,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void post(int requestId, String url, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void post(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.POST, argList, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.POST, requestArgs, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -98,9 +100,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void post(int requestId, String url, List<RequestArg> argList)
+    public void post(int requestId, String url, RequestArgs requestArgs)
     {
-        sendHttpRequest(requestId, url, RequestMethod.POST, argList, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.POST, requestArgs, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -110,9 +112,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void put(int requestId, String url, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void put(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.PUT, argList, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.PUT, requestArgs, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -122,9 +124,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void put(int requestId, String url, List<RequestArg> argList)
+    public void put(int requestId, String url, RequestArgs requestArgs)
     {
-        sendHttpRequest(requestId, url, RequestMethod.PUT, argList, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.PUT, requestArgs, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -134,9 +136,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void delete(int requestId, String url, List<RequestArg> argList, ResponseHandler responseHandler)
+    public void delete(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler)
     {
-        sendHttpRequest(requestId, url, RequestMethod.DELETE, argList, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.DELETE, requestArgs, responseHandler, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -146,9 +148,9 @@ public final class HttpClient implements Requester, Uploader
     }
 
     @Override
-    public void delete(int requestId, String url, List<RequestArg> argList)
+    public void delete(int requestId, String url, RequestArgs requestArgs)
     {
-        sendHttpRequest(requestId, url, RequestMethod.DELETE, argList, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
+        sendHttpRequest(requestId, url, RequestMethod.DELETE, requestArgs, null, DEFAULT_REQUEST_ENCODING, null, null, DEFAULT_TIMEOUT_CONN, DEFAULT_TIMEOUT_READ, DEFAULT_USE_CACHES);
     }
 
     @Override
@@ -221,16 +223,16 @@ public final class HttpClient implements Requester, Uploader
      * @param requestId       The identification number of this request.
      * @param url             [NonNull] The string of the host url.
      * @param requestMethod   [NonNull] {@link RequestMethod}
-     * @param argList         [Nullable] A Map that contains some argList.
+     * @param requestArgs     [Nullable] A Map that contains some requestArgs.
      * @param responseHandler [Nullable] Implementation of {@link ResponseHandler}
-     * @param requestEncoding [Nullable] Encoding for the request's argList.
+     * @param requestEncoding [Nullable] Encoding for the request's requestArgs.
      * @param setHeaders      [Nullable] A Map that contains some http headers which should be set to the request.
      * @param addHeaders      [Nullable] A Map that contains some http headers which should be added to the request.
      * @param timeoutConn     Connection timeout(ms).
      * @param timeoutRead     Read operation timeout(ms).
      * @param ifUseCaches     Use caches or not.
      */
-    void sendHttpRequest(int requestId, String url, RequestMethod requestMethod, List<RequestArg> argList, ResponseHandler responseHandler, String requestEncoding, Map<String, String> setHeaders, Map<String, List<String>> addHeaders, int timeoutConn, int timeoutRead, boolean ifUseCaches)
+    void sendHttpRequest(int requestId, String url, RequestMethod requestMethod, RequestArgs requestArgs, ResponseHandler responseHandler, String requestEncoding, Map<String, String> setHeaders, Map<String, List<String>> addHeaders, int timeoutConn, int timeoutRead, boolean ifUseCaches)
     {
         Objects.requireNonNull(url);
         Objects.requireNonNull(requestMethod);
@@ -248,7 +250,7 @@ public final class HttpClient implements Requester, Uploader
             {
                 boolean isBodyNeeded = requestMethod == RequestMethod.POST || requestMethod == RequestMethod.PUT;
                 RequestContentType contentType = isBodyNeeded ? RequestContentType.FORM_URL_ENCODED : null;
-                String requestData = createRequestData(argList, requestEncoding);
+                String requestData = createRequestData(requestArgs, requestEncoding);
                 String fullUrl = createFullUrl(url, requestMethod, requestData);
                 connection = createConnection(fullUrl);
                 setConnAttributes(connection, requestMethod.name(), timeoutConn, timeoutRead, isBodyNeeded, !isBodyNeeded && ifUseCaches);
@@ -402,48 +404,15 @@ public final class HttpClient implements Requester, Uploader
         responseHandler.register(requestId);
     }
 
-    private String encode(Object object, String encoding)
-            throws UnsupportedEncodingException
-    {
-        return URLEncoder.encode(object == null ? "" : String.valueOf(object), encoding);
-    }
-
     /**
      * Prepare the request data(query strings) which looks like 'name1=value1&name2=value2' with the given args and requestEncoding.
      */
-    private String createRequestData(List<RequestArg> args, String requestEncoding)
+    private String createRequestData(RequestArgs args, String requestEncoding)
             throws UnsupportedEncodingException
     {
         if(args != null)
         {
-            int size = args.size();
-            if(size > 0)
-            {
-                StringBuilder stringBuilder = new StringBuilder(size * 10);
-                if(requestEncoding == null || requestEncoding.isEmpty())
-                {
-                    requestEncoding = DEFAULT_REQUEST_ENCODING;
-                }
-                Iterator<RequestArg> iterator = args.iterator();
-                RequestArg requestArg = iterator.next();
-                String name = requestArg.getName();
-                Object value = requestArg.getValue();
-                if(name != null && !name.isEmpty())
-                {
-                    stringBuilder.append(name).append('=').append(encode(value, requestEncoding));
-                }
-                while(iterator.hasNext())
-                {
-                    requestArg = iterator.next();
-                    name = requestArg.getName();
-                    value = requestArg.getValue();
-                    if(name != null && !name.isEmpty())
-                    {
-                        stringBuilder.append('&').append(name).append('=').append(encode(value, requestEncoding));
-                    }
-                }
-                return stringBuilder.toString();
-            }
+            return args.toString(requestEncoding == null || requestEncoding.isEmpty() ? DEFAULT_REQUEST_ENCODING : requestEncoding);
         }
         return null;
     }

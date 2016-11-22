@@ -19,12 +19,9 @@ import cn.sel.shc.main.HttpClient;
 import cn.sel.shc.main.HttpResponse;
 import cn.sel.shc.main.RequestHolder;
 import cn.sel.shc.main.ResponseHandler;
-import cn.sel.shc.object.RequestArg;
+import cn.sel.shc.object.RequestArgs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RequestClient
 {
@@ -59,29 +56,29 @@ public class RequestClient
 
     public static void main(String... args)
     {
-        List<RequestArg> argList = new ArrayList<>();
-        argList.add(new RequestArg("param1", "abc"));
-        argList.add(new RequestArg("param2", 123));
+        RequestArgs requestArgs = new RequestArgs();
+        requestArgs.put("param1", "abc");
+        requestArgs.put("param2", 123);
         RequestHolder requestHolder = HttpClient.getInstance().prepare();
-        requestHolder.get(1, "http://localhost:8008", argList, RESPONSE_HANDLER);
-        requestHolder.post(2, "http://localhost:8008", argList, RESPONSE_HANDLER);
-        requestHolder.put(3, "http://localhost:8008", argList, RESPONSE_HANDLER);
-        requestHolder.delete(4, "http://localhost:8008", argList, RESPONSE_HANDLER);
-        List<RequestArg> get = new ArrayList<>();
-        argList.add(new RequestArg("method", "GET"));
-        argList.add(new RequestArg("num", 111));
+        requestHolder.get(1, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        requestHolder.post(2, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        requestHolder.put(3, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        requestHolder.delete(4, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        RequestArgs get = new RequestArgs();
+        requestArgs.put("method", "GET");
+        requestArgs.put("num", 111);
         HttpClient.getInstance().get(11, "http://localhost:8008", get);
-        List<RequestArg> post = new ArrayList<>();
-        post.add(new RequestArg("method", "POST"));
-        post.add(new RequestArg("num", 222));
+        RequestArgs post = new RequestArgs();
+        post.put("method", "POST");
+        post.put("num", 222);
         HttpClient.getInstance().post(12, "http://localhost:8008", post);
-        List<RequestArg> put = new ArrayList<>();
-        put.add(new RequestArg("method", "PUT"));
-        put.add(new RequestArg("num", 333));
+        RequestArgs put = new RequestArgs();
+        put.put("method", "PUT");
+        put.put("num", 333);
         HttpClient.getInstance().put(13, "http://localhost:8008", put);
-        List<RequestArg> delete = new ArrayList<>();
-        delete.add(new RequestArg("method", "DELETE"));
-        delete.add(new RequestArg("num", 333));
+        RequestArgs delete = new RequestArgs();
+        delete.put("method", "DELETE");
+        delete.put("num", 333);
         HttpClient.getInstance().delete(14, "http://localhost:8008", delete);
     }
 }

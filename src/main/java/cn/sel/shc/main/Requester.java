@@ -15,9 +15,8 @@
  */
 package cn.sel.shc.main;
 
-import cn.sel.shc.object.RequestArg;
+import cn.sel.shc.object.RequestArgs;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +35,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void get(int requestId, String url, List<RequestArg> parameters, ResponseHandler responseHandler);
+    void get(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
      * @see Requester
@@ -46,7 +45,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void get(int requestId, String url, List<RequestArg> parameters);
+    void get(int requestId, String url, RequestArgs requestArgs);
 
     /**
      * @see Requester
@@ -56,7 +55,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void post(int requestId, String url, List<RequestArg> parameters, ResponseHandler responseHandler);
+    void post(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
      * @see Requester
@@ -66,7 +65,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void post(int requestId, String url, List<RequestArg> parameters);
+    void post(int requestId, String url, RequestArgs requestArgs);
 
     /**
      * @see Requester
@@ -76,7 +75,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void put(int requestId, String url, List<RequestArg> parameters, ResponseHandler responseHandler);
+    void put(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
      * @see Requester
@@ -86,7 +85,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void put(int requestId, String url, List<RequestArg> parameters);
+    void put(int requestId, String url, RequestArgs requestArgs);
 
     /**
      * @see Requester
@@ -96,7 +95,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void delete(int requestId, String url, List<RequestArg> parameters, ResponseHandler responseHandler);
+    void delete(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
      * @see Requester
@@ -106,7 +105,7 @@ interface Requester
     /**
      * @see Requester
      */
-    void delete(int requestId, String url, List<RequestArg> parameters);
+    void delete(int requestId, String url, RequestArgs requestArgs);
 
     /**
      * @see Requester

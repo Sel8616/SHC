@@ -43,17 +43,9 @@ public class JettyServer
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException, ServletException
+                    throws IOException
             {
                 i(request);
-                super.handle(target, baseRequest, request, response);
-                o(request, response);
-            }
-
-            @Override
-            protected void doHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException, ServletException
-            {
                 LOGGER.info(request.getMethod());
                 if(target.contains("upload"))
                 {
@@ -91,6 +83,7 @@ public class JettyServer
                     response.setStatus(200);
                 }
                 baseRequest.setHandled(true);
+                o(request, response);
             }
 
             @Override
