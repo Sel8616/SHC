@@ -17,8 +17,12 @@ package cn.sel.shc.constant;
 
 public enum RequestMethod
 {
+    OPTIONS,
     GET,
+    HEAD,
     POST,
     PUT,
-    DELETE
+    DELETE,
+    TRACE,
+    CONNECT
 }

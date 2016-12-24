@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="shc_test_log" status="info" strict="true">
+  <Appenders>
+    <Console name="console" target="SYSTEM_OUT">
+      <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%p] %c.%M(%L) :: %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="console"/>
+    </Root>
+  </Loggers>
+</Configuration>

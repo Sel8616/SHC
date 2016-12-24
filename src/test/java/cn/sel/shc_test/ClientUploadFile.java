@@ -18,6 +18,7 @@ package cn.sel.shc_test;
 import cn.sel.shc.main.HttpClient;
 import cn.sel.shc.main.HttpResponse;
 import cn.sel.shc.main.ResponseHandler;
+import cn.sel.shc.main.UploadHttpClient;
 import cn.sel.shc.object.UploadFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +29,10 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadFileClient
+public class ClientUploadFile
 {
     private static final Logger LOGGER = LoggerFactory.getLogger("SHC_TEST_UPLOAD_CLIENT");
+    private static final UploadHttpClient HTTP_CLIENT = HttpClient.getUpload();
     private static final ResponseHandler RESPONSE_HANDLER = new ResponseHandler()
     {
         @Override
@@ -62,13 +64,14 @@ public class UploadFileClient
     public static void main(String... args)
             throws UnsupportedEncodingException
     {
-        URL resource1 = UploadFileClient.class.getClassLoader().getResource("uploading.txt");
-        URL resource2 = UploadFileClient.class.getClassLoader().getResource("sharingan.png");
+        ClassLoader classLoader = ClientUploadFile.class.getClassLoader();
+        URL resource1 = classLoader.getResource("uploading.txt");
+        URL resource2 = classLoader.getResource("sharingan.png");
         String file1 = URLDecoder.decode(resource1.getPath(), "UTF-8");
         String file2 = URLDecoder.decode(resource2.getPath(), "UTF-8");
         List<UploadFile> fileList = new ArrayList<>();
-        fileList.add(new UploadFile("txtFile", file1));
-        fileList.add(new UploadFile("pngFile", file2));
-        HttpClient.getInstance().uploadFileList(1, "http://localhost:8008/upload", fileList, RESPONSE_HANDLER);
+        fileList.add(new UploadFile(file1));
+        fileList.add(new UploadFile(file2));
+        HTTP_CLIENT.uploadFileList(1, "http://localhost:8008/upload", fileList, RESPONSE_HANDLER);
     }
 }

@@ -40,22 +40,7 @@ public class HttpResponse
     @Override
     public String toString()
     {
-        return "HttpResponse{" +
-                "url=" + url +
-                ", statusCode=" + statusCode +
-                ", responseMessage='" + responseMessage + '\'' +
-                ", contentType='" + contentType + '\'' +
-                ", contentEncoding='" + contentEncoding + '\'' +
-                ", contentLength=" + contentLength +
-                ", date=" + date +
-                ", expires=" + expires +
-                ", ifModifiedSince=" + ifModifiedSince +
-                ", lastModified=" + lastModified +
-                ", ifNoneMatch='" + ifNoneMatch + '\'' +
-                ", ETag='" + ETag + '\'' +
-                ", contentBytes=" + Arrays.toString(contentBytes) +
-                ", headers=" + headers +
-                '}';
+        return "HttpResponse{" + "url=" + url + ", statusCode=" + statusCode + ", responseMessage='" + responseMessage + '\'' + ", contentType='" + contentType + '\'' + ", contentEncoding='" + contentEncoding + '\'' + ", contentLength=" + contentLength + ", date=" + date + ", expires=" + expires + ", ifModifiedSince=" + ifModifiedSince + ", lastModified=" + lastModified + ", ifNoneMatch='" + ifNoneMatch + '\'' + ", ETag='" + ETag + '\'' + ", contentBytes=" + Arrays.toString(contentBytes) + ", headers=" + headers + '}';
     }
 
     public void dispose()
@@ -250,6 +235,17 @@ public class HttpResponse
     public String getHeaderMapString()
     {
         return String.valueOf(headers);
+    }
+
+    void setContent(String content)
+    {
+        contentBytes = content.getBytes();
+    }
+
+    void setContent(String content, String charset)
+            throws UnsupportedEncodingException
+    {
+        contentBytes = content.getBytes(charset);
     }
 
     void setHeaders(Map<String, List<String>> headerFields)

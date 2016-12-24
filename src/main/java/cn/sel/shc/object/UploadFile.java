@@ -15,43 +15,75 @@
  */
 package cn.sel.shc.object;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-public class UploadFile
+public class UploadFile extends UploadObject
 {
-    private final String filename;
     private final File file;
 
-    public UploadFile(String filename, String file)
+    public UploadFile(String file)
     {
-        this(filename, new File(file));
+        this(null, null, new File(file));
     }
 
-    public UploadFile(String filename, File file)
+    public UploadFile(File file)
+    {
+        this(null, null, file);
+    }
+
+    public UploadFile(String name, String file)
+    {
+        this(name, null, new File(file));
+    }
+
+    public UploadFile(String name, File file)
+    {
+        this(name, null, file);
+    }
+
+    public UploadFile(String name, String filename, String file)
+    {
+        this(name, filename, new File(file));
+    }
+
+    public UploadFile(String name, String filename, File file)
     {
         if(file == null || !file.exists())
         {
-            throw new IllegalArgumentException("The file is null or it does not exist!");
+            throw new IllegalArgumentException("The uploading file is null or it does not exist!");
+        }
+        if(file.isDirectory())
+        {
+            throw new IllegalArgumentException("Upload a directory is not supported!");
         }
         if(!file.canRead())
         {
             throw new IllegalArgumentException("The file is not readable!");
         }
-        if(filename == null || filename.isEmpty())
-        {
-            filename = file.getName();
-        }
-        this.filename = filename;
         this.file = file;
+        setFilename(filename == null || filename.isEmpty() ? file.getName() : filename);
+        setName(name == null || name.isEmpty() ? getDefaultName() : name);
     }
 
-    public String getFilename()
+    @Override
+    public InputStream getInputStream()
+            throws IOException
     {
-        return filename;
+        return new FileInputStream(file);
     }
 
-    public File getFile()
+    @Override
+    public String getContentType()
     {
-        return file;
+        return new MimetypesFileTypeMap().getContentType(file);
+    }
+
+    private String getDefaultName()
+    {
+        return filename.substring(filename.lastIndexOf(File.separator) + 1).substring(0, filename.lastIndexOf('.'));
     }
 }

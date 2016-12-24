@@ -18,6 +18,7 @@ package cn.sel.shc_test;
 import cn.sel.shc.main.HttpClient;
 import cn.sel.shc.main.HttpResponse;
 import cn.sel.shc.main.ResponseHandler;
+import cn.sel.shc.main.UploadHttpClient;
 import cn.sel.shc.object.UploadData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadDataClient
+public class ClientUploadData
 {
     private static final Logger LOGGER = LoggerFactory.getLogger("SHC_TEST_UPLOAD_CLIENT");
+    private static final UploadHttpClient HTTP_CLIENT = HttpClient.getUpload();
     private static final ResponseHandler RESPONSE_HANDLER = new ResponseHandler()
     {
         @Override
@@ -59,8 +61,8 @@ public class UploadDataClient
     public static void main(String... args)
     {
         List<UploadData> dataList = new ArrayList<>();
-        dataList.add(new UploadData("uploadData1", "shc_upload_data1".getBytes()));
-        dataList.add(new UploadData("uploadData2", "shc_upload_data2".getBytes()));
-        HttpClient.getInstance().uploadDataList(11, "http://localhost:8008/upload", dataList, RESPONSE_HANDLER);
+        dataList.add(new UploadData("uploadData1", "shc_test_upload_data1".getBytes()));
+        dataList.add(new UploadData("uploadData2", "shc_test_upload_data2".getBytes()));
+        HTTP_CLIENT.uploadDataList(0, "http://localhost:8008/upload", dataList, RESPONSE_HANDLER);
     }
 }

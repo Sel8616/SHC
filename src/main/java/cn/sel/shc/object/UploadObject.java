@@ -15,40 +15,44 @@
  */
 package cn.sel.shc.object;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class UploadData extends UploadObject
+public abstract class UploadObject
 {
-    private final byte[] data;
+    protected String name;
+    protected String filename;
 
-    public UploadData(String name, byte[] data)
+    public abstract InputStream getInputStream()
+            throws IOException;
+
+    public abstract String getContentType();
+
+    public String getName()
     {
-        this(name, name, data);
+        return name;
     }
 
-    public UploadData(String name, String filename, byte[] data)
+    public void setName(String name)
     {
-        if(data == null || data.length < 1)
+        if(name == null || name.isEmpty())
         {
-            throw new IllegalArgumentException("The uploading data must not be null or empty!");
+            throw new IllegalArgumentException("The name must not be null or empty!");
         }
-        this.data = data;
-        setName(name);
-        setFilename(filename);
+        this.name = name;
     }
 
-    @Override
-    public InputStream getInputStream()
-            throws IOException
+    public String getFilename()
     {
-        return new ByteArrayInputStream(data);
+        return filename;
     }
 
-    @Override
-    public String getContentType()
+    public void setFilename(String filename)
     {
-        return "text/plain";
+        if(filename == null || filename.isEmpty())
+        {
+            throw new IllegalArgumentException("The filename must not be null or empty!");
+        }
+        this.filename = filename;
     }
 }

@@ -15,17 +15,15 @@
  */
 package cn.sel.shc_test;
 
-import cn.sel.shc.main.HttpClient;
-import cn.sel.shc.main.HttpResponse;
-import cn.sel.shc.main.RequestHolder;
-import cn.sel.shc.main.ResponseHandler;
+import cn.sel.shc.main.*;
 import cn.sel.shc.object.RequestArgs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RequestClient
+public class ClientDefault
 {
     private static final Logger LOGGER = LoggerFactory.getLogger("SHC_TEST_REQUEST_CLIENT");
+    private static final DefaultHttpClient HTTP_CLIENT = HttpClient.getDefault();
     private static final ResponseHandler RESPONSE_HANDLER = new ResponseHandler()
     {
         @Override
@@ -59,26 +57,26 @@ public class RequestClient
         RequestArgs requestArgs = new RequestArgs();
         requestArgs.put("param1", "abc");
         requestArgs.put("param2", 123);
-        RequestHolder requestHolder = HttpClient.getInstance().prepare();
-        requestHolder.get(1, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
-        requestHolder.post(2, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
-        requestHolder.put(3, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
-        requestHolder.delete(4, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
-        RequestArgs get = new RequestArgs();
-        requestArgs.put("method", "GET");
-        requestArgs.put("num", 111);
-        HttpClient.getInstance().get(11, "http://localhost:8008", get);
-        RequestArgs post = new RequestArgs();
-        post.put("method", "POST");
-        post.put("num", 222);
-        HttpClient.getInstance().post(12, "http://localhost:8008", post);
-        RequestArgs put = new RequestArgs();
-        put.put("method", "PUT");
-        put.put("num", 333);
-        HttpClient.getInstance().put(13, "http://localhost:8008", put);
-        RequestArgs delete = new RequestArgs();
-        delete.put("method", "DELETE");
-        delete.put("num", 333);
-        HttpClient.getInstance().delete(14, "http://localhost:8008", delete);
+        DefaultRequestHolder defaultRequestHolder = HTTP_CLIENT.prepare();
+        defaultRequestHolder.get(1, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        defaultRequestHolder.post(2, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        defaultRequestHolder.put(3, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        defaultRequestHolder.delete(4, "http://localhost:8008", requestArgs, RESPONSE_HANDLER);
+        RequestArgs argsGet = new RequestArgs();
+        argsGet.put("method", "GET");
+        argsGet.put("num", 111);
+        HTTP_CLIENT.get(11, "http://localhost:8008", argsGet);
+        RequestArgs argsPost = new RequestArgs();
+        argsPost.put("method", "POST");
+        argsPost.put("num", 222);
+        HTTP_CLIENT.post(12, "http://localhost:8008", argsPost);
+        RequestArgs argsPut = new RequestArgs();
+        argsPut.put("method", "PUT");
+        argsPut.put("num", 333);
+        HTTP_CLIENT.put(13, "http://localhost:8008", argsPut);
+        RequestArgs argsDelete = new RequestArgs();
+        argsDelete.put("method", "DELETE");
+        argsDelete.put("num", 333);
+        HTTP_CLIENT.delete(14, "http://localhost:8008", argsDelete);
     }
 }

@@ -15,51 +15,10 @@
  */
 package cn.sel.shc.constant;
 
-import java.security.SecureRandom;
+import java.util.UUID;
 
 public enum RequestContentType
 {
-    FORM_MULTI_PART
-            {
-                private String boundary = defaultBoundary();
-
-                public RequestContentType withBoundary(String boundary)
-                {
-                    this.boundary = boundary;
-                    return this;
-                }
-
-                @Override
-                public String value()
-                {
-                    return "multipart/form-data; boundary=" + boundary;
-                }
-
-                @Override
-                public String boundary()
-                {
-                    return boundary;
-                }
-
-                private String defaultBoundary()
-                {
-                    byte[] bytes = new byte[8];
-                    return "----SHC#Boundary" + random16();
-                }
-
-                private String random16()
-                {
-                    SecureRandom random = new SecureRandom();
-                    int length = 16;
-                    String digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=_+";
-                    char[] result = new char[length];
-                    for(int i = 0; i < length; i++)
-                    {
-                        result[i] = digits.charAt(random.nextInt(66));
-                    }
-                    return new String(result);
-                }
-            },
     FORM_URL_ENCODED
             {
                 @Override
@@ -67,15 +26,16 @@ public enum RequestContentType
                 {
                     return "application/x-www-form-urlencoded";
                 }
-
+            },
+    FORM_MULTI_PART
+            {
                 @Override
-                public String boundary()
+                public String value()
                 {
-                    throw new UnsupportedOperationException();
+                    return "multipart/form-data; boundary=" + BOUNDARY;
                 }
             };
+    public static final String BOUNDARY = "--------SHC#Boundary#" + UUID.randomUUID();
 
     public abstract String value();
-
-    public abstract String boundary();
 }

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class JettyServer
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger("SHC_TEST_JETTY_SERVER");
+    private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
 
     public static void main(String... args)
             throws Exception
@@ -57,14 +57,14 @@ public class JettyServer
                     parts.forEach(part->
                     {
                         Collection<String> headerNames = part.getHeaderNames();
-                        String filename = part.getName();
-                        String submittedFileName = part.getSubmittedFileName();
+                        String name = part.getName();
+                        String filename = part.getSubmittedFileName();
                         String fileContentType = part.getContentType();
                         long fileSize = part.getSize();
                         LOGGER.info("==========================================================");
                         LOGGER.info("headerNames: " + headerNames);
+                        LOGGER.info("name: " + name);
                         LOGGER.info("filename: " + filename);
-                        LOGGER.info("submittedFileName: " + submittedFileName);
                         LOGGER.info("fileContentType: " + fileContentType);
                         LOGGER.info("fileSize: " + fileSize);
                         LOGGER.info("==========================================================");
@@ -102,16 +102,12 @@ public class JettyServer
 
     private static void i(HttpServletRequest request)
     {
-        String msg = String.format("%s -> %s\t[%s]\tHeaders:%s\tParameters:%s", request.getRemoteAddr(), request.getRequestURI(), request.getMethod(),
-                getHeaders(request), request.getParameterMap());
-        LOGGER.info(msg);
+        LOGGER.info("#IN#  {} -> {}  [{}]  Headers:{}  Parameters:{}", request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), getHeaders(request), request.getParameterMap());
     }
 
     private static void o(HttpServletRequest request, HttpServletResponse response)
     {
-        String msg = String.format("%s\t[%s] -> %s \tStatus:%s\tHeaders:%s", request.getRequestURI(), request.getMethod(), request.getRemoteAddr(),
-                response.getStatus(), getHeaders(response));
-        LOGGER.info(msg);
+        LOGGER.info("#OUT# {} -> {}  [{}]  StatusCode:{}  Headers:{}", request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), response.getStatus(), getHeaders(response));
     }
 
     private static String getHeaders(HttpServletRequest request)

@@ -31,45 +31,45 @@ import java.util.List;
  * <p>···><b>responseHandler</b></p>
  * [Nullable] Implementation of {@link ResponseHandler}. The client will overlook the response if null was passed.
  */
-interface Uploader
+interface UploadRequestSender
 {
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadFileList(int requestId, String url, List<UploadFile> fileList, ResponseHandler responseHandler);
 
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadFileList(int requestId, String url, List<UploadFile> fileList);
 
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadDataList(int requestId, String url, List<UploadData> dataList, ResponseHandler responseHandler);
 
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadDataList(int requestId, String url, List<UploadData> dataList);
 
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadFile(int requestId, String url, UploadFile fileList, ResponseHandler responseHandler);
 
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadFile(int requestId, String url, UploadFile fileList);
 
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadData(int requestId, String url, UploadData dataList, ResponseHandler responseHandler);
 
     /**
-     * @see Uploader
+     * @see UploadRequestSender
      */
     void uploadData(int requestId, String url, UploadData dataList);
 }

@@ -15,178 +15,25 @@
  */
 package cn.sel.shc.main;
 
-import cn.sel.shc.constant.RequestMethod;
-import cn.sel.shc.object.RequestArgs;
-import cn.sel.shc.object.UploadData;
-import cn.sel.shc.object.UploadFile;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Hold attributes for a new http request which is going to be send out but still has other attributes to add.
  */
-public class RequestHolder implements Requester, Uploader
+public class RequestHolder
 {
-    private final Map<String, String> HEADERS_SET = new HashMap<>();
-    private final Map<String, List<String>> HEADERS_ADD = new HashMap<>();
-    private String REQUEST_ENCODING;
-    private boolean DEFAULT_USE_CACHES;
-    private int TIMEOUT_CONN;
-    private int TIMEOUT_READ;
-
-    @Override
-    public void get(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void get(int requestId, String urlString, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, null, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void get(int requestId, String urlString, RequestArgs requestArgs)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void get(int requestId, String urlString)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.GET, null, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void post(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void post(int requestId, String urlString, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, null, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void post(int requestId, String urlString, RequestArgs requestArgs)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void post(int requestId, String urlString)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.POST, null, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void put(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void put(int requestId, String urlString, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, null, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void put(int requestId, String urlString, RequestArgs requestArgs)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void put(int requestId, String urlString)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.PUT, null, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void delete(int requestId, String urlString, RequestArgs requestArgs, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, requestArgs, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void delete(int requestId, String urlString, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, null, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void delete(int requestId, String urlString, RequestArgs requestArgs)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, requestArgs, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void delete(int requestId, String urlString)
-    {
-        HttpClient.getInstance().sendHttpRequest(requestId, urlString, RequestMethod.DELETE, null, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ, DEFAULT_USE_CACHES);
-    }
-
-    @Override
-    public void uploadFileList(int requestId, String url, List<UploadFile> fileList, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendUploadFileRequest(requestId, url, fileList, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
-
-    @Override
-    public void uploadFileList(int requestId, String url, List<UploadFile> fileList)
-    {
-        HttpClient.getInstance().sendUploadFileRequest(requestId, url, fileList, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
-
-    @Override
-    public void uploadDataList(int requestId, String url, List<UploadData> dataList, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendUploadDataRequest(requestId, url, dataList, responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
-
-    @Override
-    public void uploadDataList(int requestId, String url, List<UploadData> dataList)
-    {
-        HttpClient.getInstance().sendUploadDataRequest(requestId, url, dataList, null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
-
-    @Override
-    public void uploadFile(int requestId, String url, UploadFile file, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendUploadFileRequest(requestId, url, Collections.singletonList(file), responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
-
-    @Override
-    public void uploadFile(int requestId, String url, UploadFile file)
-    {
-        HttpClient.getInstance().sendUploadFileRequest(requestId, url, Collections.singletonList(file), null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
-
-    @Override
-    public void uploadData(int requestId, String url, UploadData data, ResponseHandler responseHandler)
-    {
-        HttpClient.getInstance().sendUploadDataRequest(requestId, url, Collections.singletonList(data), responseHandler, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
-
-    @Override
-    public void uploadData(int requestId, String url, UploadData data)
-    {
-        HttpClient.getInstance().sendUploadDataRequest(requestId, url, Collections.singletonList(data), null, REQUEST_ENCODING, HEADERS_SET, HEADERS_ADD, TIMEOUT_CONN, TIMEOUT_READ);
-    }
+    protected final Map<String, String> HEADERS_SET = new HashMap<>();
+    protected final Map<String, List<String>> HEADERS_ADD = new HashMap<>();
+    protected String REQUEST_ENCODING;
+    protected int TIMEOUT_CONN;
+    protected int TIMEOUT_READ;
 
     public RequestHolder setRequestEncoding(String encoding)
     {
         REQUEST_ENCODING = encoding;
-        return this;
-    }
-
-    public RequestHolder setUseCaches(boolean ifUseCaches)
-    {
-        DEFAULT_USE_CACHES = ifUseCaches;
         return this;
     }
 

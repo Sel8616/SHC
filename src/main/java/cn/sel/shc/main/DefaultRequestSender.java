@@ -28,87 +28,87 @@ import java.util.Map;
  * <p>···><b>parameters</b></p>
  * [Nullable] A {@link Map} contains some parameters.
  * <p>···><b>responseHandler</b></p>
- * [Nullable] Implementation of {@link ResponseHandler}. The client will overlook the response if null was passed.
+ * [Nullable] Implementation of {@link ResponseHandler}. The response will be ignored if null was passed.
  */
-interface Requester
+interface DefaultRequestSender
 {
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void get(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void get(int requestId, String url, ResponseHandler handler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void get(int requestId, String url, RequestArgs requestArgs);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void get(int requestId, String url);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void post(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void post(int requestId, String url, ResponseHandler handler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void post(int requestId, String url, RequestArgs requestArgs);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void post(int requestId, String url);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void put(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void put(int requestId, String url, ResponseHandler handler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void put(int requestId, String url, RequestArgs requestArgs);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void put(int requestId, String url);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void delete(int requestId, String url, RequestArgs requestArgs, ResponseHandler responseHandler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void delete(int requestId, String url, ResponseHandler handler);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void delete(int requestId, String url, RequestArgs requestArgs);
 
     /**
-     * @see Requester
+     * @see DefaultRequestSender
      */
     void delete(int requestId, String url);
 }
