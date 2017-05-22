@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="shc" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="cn.sel" external.system.module.version="0.8" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
+<module external.linked.project.id="shc" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="cn.sel" external.system.module.version="0.8.1" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/../../build/classes/main" />
     <output-test url="file://$MODULE_DIR$/../../build/classes/test" />
     <exclude-output />
@@ -15,18 +15,17 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="TEST" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.logging.log4j:log4j-slf4j-impl:2.7" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.logging.log4j:log4j-api:2.7" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.logging.log4j:log4j-core:2.7" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-io:9.4.0.RC3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-http:9.4.0.RC3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-server:9.4.0.RC3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-security:9.4.0.RC3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-util:9.4.0.RC3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-servlet:9.4.0.RC3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-xml:9.4.0.RC3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-webapp:9.4.0.RC3" level="project" />
-    <orderEntry type="library" name="Gradle: javax.activation:activation:1.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.22" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-webapp:9.4.5.v20170502" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.logging.log4j:log4j-core:2.8.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.logging.log4j:log4j-api:2.8.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.logging.log4j:log4j-slf4j-impl:2.8.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-xml:9.4.5.v20170502" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-servlet:9.4.5.v20170502" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-util:9.4.5.v20170502" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-security:9.4.5.v20170502" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-server:9.4.5.v20170502" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-http:9.4.5.v20170502" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.eclipse.jetty:jetty-io:9.4.5.v20170502" level="project" />
   </component>
 </module>

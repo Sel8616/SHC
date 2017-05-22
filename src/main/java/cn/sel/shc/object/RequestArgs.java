@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Erlu Shang (sel8616@gmail.com/philshang@163.com)
+ * Copyright 2015-2017 Erlu Shang (sel8616@gmail.com/philshang@163.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class RequestArgs
+public final class RequestArgs
 {
     private final Map<String, Object> args = new HashMap<>();
 

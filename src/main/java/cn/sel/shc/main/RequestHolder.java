@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Erlu Shang (sel8616@gmail.com/philshang@163.com)
+ * Copyright 2015-2017 Erlu Shang (sel8616@gmail.com/philshang@163.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,34 +31,30 @@ public class RequestHolder
     protected int TIMEOUT_CONN;
     protected int TIMEOUT_READ;
 
-    public RequestHolder setRequestEncoding(String encoding)
+    public void setRequestEncoding(String encoding)
     {
         REQUEST_ENCODING = encoding;
-        return this;
     }
 
-    public RequestHolder setConnTimeout(int connTimeout)
+    public void setConnTimeout(int connTimeout)
     {
         TIMEOUT_CONN = connTimeout;
-        return this;
     }
 
-    public RequestHolder setReadTimeout(int readTimeout)
+    public void setReadTimeout(int readTimeout)
     {
         TIMEOUT_READ = readTimeout;
-        return this;
     }
 
-    public RequestHolder setHeader(String name, String value)
+    public void setHeader(String name, String value)
     {
         if(name != null && !name.isEmpty() && value != null)
         {
             HEADERS_SET.put(name, value);
         }
-        return this;
     }
 
-    public RequestHolder addHeader(String name, String value)
+    public void addHeader(String name, String value)
     {
         if(name != null && !name.isEmpty() && value != null)
         {
@@ -73,6 +69,5 @@ public class RequestHolder
                 HEADERS_ADD.put(name, values);
             }
         }
-        return this;
     }
 }

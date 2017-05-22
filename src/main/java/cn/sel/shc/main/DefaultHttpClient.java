@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Erlu Shang (sel8616@gmail.com/philshang@163.com)
+ * Copyright 2015-2017 Erlu Shang (sel8616@gmail.com/philshang@163.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -244,18 +244,15 @@ public class DefaultHttpClient extends HttpClient implements DefaultRequestSende
     private String createFullUrl(String url, RequestMethod requestMethod, String requestData)
     {
         String fullUrl;
-        switch(requestMethod)
+        if(requestMethod == RequestMethod.GET || requestMethod == RequestMethod.DELETE)
         {
-            case GET:
-            case DELETE:
-                fullUrl = requestData != null && !requestData.isEmpty() ? url + '?' + requestData : url;
-                break;
-            case POST:
-            case PUT:
-                fullUrl = url;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected data flow!");
+            fullUrl = requestData != null && !requestData.isEmpty() ? url + '?' + requestData : url;
+        } else if(requestMethod == RequestMethod.POST || requestMethod == RequestMethod.PUT)
+        {
+            fullUrl = url;
+        } else
+        {
+            throw new IllegalStateException("Unexpected data flow!");
         }
         return fullUrl;
     }

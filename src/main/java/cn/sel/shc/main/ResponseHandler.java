@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Erlu Shang (sel8616@gmail.com/philshang@163.com)
+ * Copyright 2015-2017 Erlu Shang (sel8616@gmail.com/philshang@163.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public abstract class ResponseHandler
     /**
      * RequestId container.
      */
-    Set<Integer> ids = new HashSet<>();
+    protected final Set<Integer> requestIds = new HashSet<>();
 
     /**
      * The request was finished(success/fail/error), and one of the other 3 abstract methods will be invoked according to the status code if 'false' was returned.
@@ -68,17 +68,17 @@ public abstract class ResponseHandler
 
     public synchronized void cancel(int requestId)
     {
-        ids.remove(requestId);
+        requestIds.remove(requestId);
     }
 
     synchronized void register(int requestId)
     {
-        ids.add(requestId);
+        requestIds.add(requestId);
     }
 
     synchronized boolean isRegistered(int requestId)
     {
-        return ids.contains(requestId);
+        return requestIds.contains(requestId);
     }
 
     /**
@@ -118,6 +118,6 @@ public abstract class ResponseHandler
 
     private synchronized void remove(int requestId)
     {
-        ids.remove(requestId);
+        requestIds.remove(requestId);
     }
 }
